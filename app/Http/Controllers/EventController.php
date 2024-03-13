@@ -17,7 +17,10 @@ class EventController extends Controller
     {
         // Crea un nuevo evento
         $event = Event::create($request->all());
-        return response()->json($event, 201);
+        return response()->json([
+            'message' => 'Event Create!',
+            'data'=> $event],
+            201);
     }
 
     public function update(Request $request, $id)
@@ -25,13 +28,27 @@ class EventController extends Controller
         // Actualiza un evento existente
         $event = Event::findOrFail($id);
         $event->update($request->all());
-        return response()->json($event, 200);
+        return response()->json([
+                'message' => 'Evente Update!',
+                'data' => $event
+            ], 200 );
     }
 
     public function destroy($id)
     {
-        // Elimina un evento
-        Event::destroy($id);
-        return response()->json(null, 204);
+        // Buscar el evento por su ID
+        $event = Event::find($id);
+
+        // Verificar si el evento existe
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        // Eliminar el evento
+        $event->delete();
+
+        // Devolver una respuesta indicando que el evento ha sido eliminado exitosamente
+        return response()->json(['message' => 'Event deleted OK'], 200);
     }
+
 }
