@@ -33,8 +33,6 @@ Route::controller(AuthLoginRegisterController::class)->group(function() {
 });
 
 
-
-
 //Rutas de usuario 
 Route::controller(UserController::class)->group(function(){
     Route::put('{id}/profile', 'updateProfile');
