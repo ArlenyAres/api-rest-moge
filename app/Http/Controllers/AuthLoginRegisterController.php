@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
-class LoginRegisterController extends Controller
+class AuthLoginRegisterController extends Controller
 {
     /**
      * Register a new user.
