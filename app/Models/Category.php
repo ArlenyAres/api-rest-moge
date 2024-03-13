@@ -13,6 +13,13 @@ class Category extends Model
         'name'
 ];
 
+    protected $hidden = [
+        'updated_at',
+        'created_at',
+        'delete_at',
+    ];
+
+
     public function events()
     {
         return $this->hasMany(Event::class);

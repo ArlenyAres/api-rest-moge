@@ -7,24 +7,26 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    public function updateProfile(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-        return response()->json($user, 200);
-    }
 
     public function getEventsCreatedByUser($id)
     {
         $user = User::findOrFail($id);
-        return response()->json($user->events, 200);
+        $eventsCreated = $user->events;
+        return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $eventsCreated], 200);
     }
 
     public function updateUserInfo(Request $request, $id)
     {
         $user = User::findOrFail($id);
         $user->update($request->only(['name', 'email', 'password']));
-        return response()->json($user, 200);
+        return response()->json(['message' => 'User information updated successfully', 'data' => $user], 200);
+    }
+
+    public function getSubscribedEvents($id)
+    {
+        $user = User::findOrFail($id);
+        $subscribedEvents = $user->events()->get();
+        return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
     }
 }
 

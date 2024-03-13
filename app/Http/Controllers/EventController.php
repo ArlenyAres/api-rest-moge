@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 class EventController extends Controller
 {
     public function index()
-    {
-        // Devuelve todos los eventos
-        return Event::all();
+    { 
+        $events = Event::all();
+        return response()->json($events, 200);
+
     }
 
     public function store(Request $request)
@@ -33,6 +34,21 @@ class EventController extends Controller
                 'data' => $event
             ], 200 );
     }
+
+    public function show($id)
+    {
+        // Buscar el evento por su ID
+        $event = Event::find($id);
+
+        // Verificar si el evento existe
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        // Devolver el evento encontrado
+        return response()->json(['data' => $event], 200);
+    }
+
 
     public function destroy($id)
     {

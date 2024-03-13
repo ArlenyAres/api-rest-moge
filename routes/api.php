@@ -37,8 +37,10 @@ Route::controller(AuthLoginRegisterController::class)->group(function() {
 
 //Rutas de usuario 
 Route::controller(UserController::class)->group(function(){
-    Route::get('/users/{id}/events','getEventsCreatedByUser');
-    Route::put('/users/{id}', 'updateProfile');
+    Route::put('{id}/profile', 'updateProfile');
+    Route::get('{id}/events','getEventsCreatedByUser');
+    Route::put('{id}/update', 'updateProfile');
+    Route::get('{id}/subscribed-events', 'getSubscribedEvents');
     
 });
 
@@ -46,7 +48,8 @@ Route::controller(UserController::class)->group(function(){
 Route::controller(EventController::class)->group(function(){
     Route::get('/events', 'index');
     Route::post('/events/create', 'store'); // Crear un nuevo
-    Route::put('/events/{id}/edit', 'update'); // Editar uno exist
+    Route::put('/events/{id}/edit', 'update');
+    Route::get('/events/{id}', 'show'); 
     Route::delete('/events/{id}/delete', 'destroy'); // Eliminar uno
 
 }); 

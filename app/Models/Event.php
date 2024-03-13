@@ -26,10 +26,12 @@ class Event extends Model
         'user_id'
     ];
 
-    protected $dates = [
+
+    protected $hidden = [
+        'updated_at',
         'created_at',
         'delete_at',
-];
+    ];
 
 public function user(): BelongsTo
     {
