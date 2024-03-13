@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Models\Registration;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
+    const CATEGORY_PRESENCIAL = 1;
+    const CATEGORY_ONLINE = 2;
     use HasFactory;
 
     protected $fillable = [
@@ -33,12 +36,12 @@ public function user(): BelongsTo
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
     
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class);
     }
