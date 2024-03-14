@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Model\Event;
+
 
 class UserController extends Controller
 {
@@ -11,9 +13,17 @@ class UserController extends Controller
     public function getEventsCreatedByUser($id)
     {
         $user = User::findOrFail($id);
-        $eventsCreated = $user->events;
+        $eventsCreated = $user->events()->paginate(15); //paginacion
         return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $eventsCreated], 200);
     }
+
+    // public function getEventsCreatedByUser($id)
+    // {
+    //     $user = User::findOrFail($id);
+    //     $eventsCreated = $user->events;
+    //     return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $eventsCreated], 200);
+    // }
+    
 
     public function updateUserInfo(Request $request, $id)
     {

@@ -8,10 +8,9 @@ use Illuminate\Http\Request;
 class EventController extends Controller
 {
     public function index()
-    { 
-        $events = Event::all();
+    {
+        $events = Event::paginate(15); //paginacion
         return response()->json($events, 200);
-
     }
 
     public function store(Request $request)
