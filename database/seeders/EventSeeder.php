@@ -23,7 +23,7 @@ class EventSeeder extends Seeder
         Category::create(['name' => 'Online']);
 
         // Crear eventos
-        Event::factory(15)->create([
+        Event::factory(25)->create([
             'category_id' => function () {
                 // Escoge aleatoriamente entre los ids de las categorías creadas
                 return Category::pluck('id')->random();
