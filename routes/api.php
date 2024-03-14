@@ -27,7 +27,7 @@ Route::middleware(['cors'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
-    Route::get('{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
+    Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
 });
 
 // Rutas de eventos

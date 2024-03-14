@@ -32,12 +32,21 @@ class UserController extends Controller
         return response()->json(['message' => 'User information updated successfully', 'data' => $user], 200);
     }
 
+
     public function getSubscribedEvents($id)
     {
         $user = User::findOrFail($id);
-        $subscribedEvents = $user->events()->get();
+        $subscribedEvents = $user->subscribedEvents()->get(); // Utiliza subscribedEvents() en lugar de events()
         return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
     }
+
+
+    // public function getSubscribedEvents($id)
+    // {
+    //     $user = User::findOrFail($id);
+    //     $subscribedEvents = $user->events()->get();
+    //     return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
+    // }
 }
 
 /* Dentro del UserController, se implementan los metodos para manejar la actualizacions del perfils de usuario, 

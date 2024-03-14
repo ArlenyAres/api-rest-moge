@@ -18,7 +18,7 @@ class EventController extends Controller
             $eventsQuery->where('category_id', $category_id);
         }
 
-        // Paginar los resultados hasta 15
+        // si no muentra todos los eventos con paginacion hasta 15
         $events = $eventsQuery->paginate(15);
 
         return response()->json($events, 200);
