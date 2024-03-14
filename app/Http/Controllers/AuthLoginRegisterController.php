@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
-class LoginRegisterController extends Controller
+class AuthLoginRegisterController extends Controller
 {
     /**
      * Register a new user.
@@ -104,12 +104,15 @@ class LoginRegisterController extends Controller
 
     /* Logout Revoca el token de acceso del usuario actual, 
     lo desconecta y devuelve una respuesta en json.*/
-    
+
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully'], 200);
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out successfully'], 200);
+        } else {
+            return response()->json(['message' => 'No user authenticated'], 404);
+        }
     }
 
     // public function user(Request $request)
