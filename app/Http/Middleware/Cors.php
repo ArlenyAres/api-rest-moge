@@ -23,7 +23,7 @@ class Cors
         if (in_array($request->header('Origin'), $allowedOrigins)) {
             $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:3000');
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            $response->headers->set('Access-Control-Allow-Headers','X-Requested-With, Content-Type, X-Token-Auth, Authorization');
         }
 
         return $response;
