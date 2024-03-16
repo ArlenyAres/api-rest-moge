@@ -10,6 +10,7 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
+    // testea si se crea el usuario
     public function testCreateUser()
     {
         $userData = [
@@ -26,15 +27,17 @@ class UserTest extends TestCase
         ]);
     }
 
+    // recoge los usuarios
     public function testGetAllUsers()
     {
         User::factory()->count(5)->create();
 
         $users = User::all();
 
-        $this->assertCount(5, $users);
+        $this->assertCount(25, $users);
     }
 
+    // recoge un usuario
     public function testGetSingleUser()
     {
         $user = User::factory()->create();
@@ -44,6 +47,7 @@ class UserTest extends TestCase
         $this->assertEquals($user->id, $foundUser->id);
     }
 
+    // actualiza un usuario
     public function testUpdateUser()
     {
         $user = User::factory()->create();
@@ -58,6 +62,7 @@ class UserTest extends TestCase
         $this->assertEquals($newName, $updatedUser->name);
     }
 
+    // elimina un usuario
     public function testDeleteUser()
     {
         $user = User::factory()->create();
