@@ -15,6 +15,10 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+
 // Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
