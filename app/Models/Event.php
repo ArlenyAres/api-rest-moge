@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Registration;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Event extends Model
 {
@@ -51,5 +52,10 @@ public function user(): BelongsTo
     public function isUpcoming()
     {
         return $this->date > date('Y-m-d H:i:s');
+    }
+
+    public function registeredUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'registrations')->withTimestamps();
     }
 }

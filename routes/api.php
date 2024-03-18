@@ -15,31 +15,32 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+// Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
-    Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-    Route::post('/login', [AuthLoginRegisterController::class, 'login']);
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
-// User routes
+// Rutas de usuario
 Route::middleware(['cors'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
-    Route::get('{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
+    Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
 });
 
-// Event routes
+// Rutas de eventos
 Route::middleware(['cors'])->group(function () {
-    Route::get('/', [EventController::class, 'index']);
-    Route::post('/create', [EventController::class, 'store']);
-    Route::put('{id}/edit', [EventController::class, 'update']);
-    Route::get('{id}', [EventController::class, 'show']);
-    Route::delete('{id}/delete', [EventController::class, 'destroy']);
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
+    Route::post('/events/create', [EventController::class, 'store']);
+    Route::put('/events/{id}/edit', [EventController::class, 'update']);
+    Route::get('/events/{id}', [EventController::class, 'show']);
+    Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
+    Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 });
 
-// Sanctum route
+
+// Ruta de Sanctum
 Route::middleware(['auth:sanctum', 'cors'])->get('/user', function (Request $request) {
     return $request->user();
 });
