@@ -77,7 +77,7 @@ class AuthTest extends TestCase
     $token = $user->createToken('TestToken')->plainTextToken;
 
     // solicitud post para que se lleve a la ruta a partir de la autorización
-    $response = $this->postJson('api/logout', [], [
+    $response = $this->getJson('api/logout', [
         'Authorization' => 'Bearer ' . $token
     ]);
 

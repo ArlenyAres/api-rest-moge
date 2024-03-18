@@ -23,7 +23,7 @@ Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 
 // Rutas de autenticacion
-Route::middleware(['cors'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
