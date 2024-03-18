@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthLoginRegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegistrationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,6 +19,8 @@ use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 
 // Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
@@ -26,18 +29,17 @@ Route::middleware(['cors'])->group(function () {
 });
 
 // Rutas de usuario
-Route::middleware(['cors'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
     Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
+    Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
 // debemos crear una ruta que lleve a un usuario a suscribirse a un evento (es un metodo post)
 });
 
 // Rutas de eventos
 Route::middleware(['cors'])->group(function () {
-    Route::get('/events', [EventController::class, 'index']);
-    Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
     Route::get('/events/{id}', [EventController::class, 'show']);
