@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class RegistrationController extends Controller
@@ -18,7 +19,7 @@ class RegistrationController extends Controller
         // Registra un usuario en un evento
         $registration = new Registration;
         $registration->event_id = $eventId;
-        $registration->user_id = $request->user()->id;
+        $registration->user_id = Auth::user()->id;
         $registration->save();
         return response()->json($registration, 201);
     }

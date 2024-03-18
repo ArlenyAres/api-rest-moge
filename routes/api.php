@@ -15,10 +15,13 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+
 // Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
-    Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-    Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
@@ -28,6 +31,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
     Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
+// debemos crear una ruta que lleve a un usuario a suscribirse a un evento (es un metodo post)
 });
 
 // Rutas de eventos
