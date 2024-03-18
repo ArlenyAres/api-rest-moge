@@ -14,11 +14,11 @@ class CategoryTest extends TestCase
     // test sobre crear una categoria
     public function testCreateCategory()
     {
-        $category = Category::create(['name' => 'Test Category']);
+        $category = Category::create(['name' => 'no-presencial']);
 
         $this->assertDatabaseHas('categories', [
             'id' => $category->id,
-            'name' => 'Test Category'
+            'name' => 'no-presencial'
         ]);
     }
 }

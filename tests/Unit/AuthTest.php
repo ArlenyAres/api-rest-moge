@@ -13,26 +13,27 @@ class AuthTest extends TestCase
     use RefreshDatabase, WithFaker;
     public function test_user_can_register()
     {
-        // Creamos un usuario utilizando Faker
-        $user = User::factory()->create([
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('123456789')
-        ]);
+        // relleno datos para que cree un usuario a partir de lo que le hemos establecido
+        $userData = [
+            'name' => 'usuario',
+            'email' => 'l@gmail.com',
+            'password' => '123456789',
+            'password_confirmation' => '123456789'
+        ];
     
-        // Realizamos una solicitud de registro
-        $response = $this->postJson('api/register', [
-            'name' => $user->name,
-            'email' => $user->email,
-            'password' => '123456789'
-        ]);
+        $response = $this->postJson('api/register', $userData);
     
-        // Verificamos que la respuesta sea exitosa
+    // Si la respuesta no es 200, mostramos los errores para que sea mas facil verificar cual es el problema en el testeo
+        if ($response->getStatusCode() != 201) {
+            $errors = $response->json()['data'];
+            var_dump($errors);
+        }
+    
         $response->assertStatus(201);
     
-        // Verificamos que se haya creado un nuevo usuario en la base de datos
+        // se ha creado en la base de datos
         $this->assertDatabaseHas('users', [
-            'email' => $user->email
+            'email' => $userData['email']
         ]);
     }
 
@@ -64,7 +65,30 @@ class AuthTest extends TestCase
     }
 
     public function test_user_can_logout()
-    {
-        //
+{
+    // creo un usuario fake que ya utilice en el register
+    $user = User::create([
+        'name' => 'usuario',
+        'email' => 'l@gmail.com',
+        'password' => Hash::make('123456789')
+    ]);
+
+    // usuario con token
+    $token = $user->createToken('TestToken')->plainTextToken;
+
+    // solicitud post para que se lleve a la ruta a partir de la autorización
+    $response = $this->postJson('api/logout', [], [
+        'Authorization' => 'Bearer ' . $token
+    ]);
+
+    if ($response->getStatusCode() != 200) {
+        $errors = $response->json()['message'];
+        var_dump($errors);
     }
+
+    // respuesta!
+    $response->assertStatus(200);
+    $response->assertJson(['message' => 'Logged out successfully']);
+    $this->assertEmpty($user->fresh()->tokens);
+}
 }
