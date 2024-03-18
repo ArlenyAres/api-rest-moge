@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 // Rutas de eventos
+// Rutas de eventos
 Route::middleware(['cors'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
@@ -48,6 +49,7 @@ Route::middleware(['cors'])->group(function () {
 });
 
 
+// Ruta de Sanctum
 // Ruta de Sanctum
 Route::middleware(['auth:sanctum', 'cors'])->get('/user', function (Request $request) {
     return $request->user();
