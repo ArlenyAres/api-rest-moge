@@ -17,8 +17,6 @@ use App\Http\Controllers\UserController;
 */
 // Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
-    Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-    Route::post('/login', [AuthLoginRegisterController::class, 'login']);
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
