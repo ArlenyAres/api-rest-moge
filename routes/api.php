@@ -21,7 +21,7 @@ Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 
 // Rutas de autenticacion
 Route::middleware(['cors'])->group(function () {
-    Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
 // Rutas de usuario
