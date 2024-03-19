@@ -15,15 +15,17 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::get('/', [EventController::class, 'index']);
+Route::get('{id}', [EventController::class, 'show']);
 
-Route::middleware(['cors'])->group(function () {
-    Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-    Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
 // User routes
-Route::middleware(['cors'])->group(function () {
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
@@ -31,11 +33,9 @@ Route::middleware(['cors'])->group(function () {
 });
 
 // Event routes
-Route::middleware(['cors'])->group(function () {
-    Route::get('/', [EventController::class, 'index']);
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::post('/create', [EventController::class, 'store']);
     Route::put('{id}/edit', [EventController::class, 'update']);
-    Route::get('{id}', [EventController::class, 'show']);
     Route::delete('{id}/delete', [EventController::class, 'destroy']);
 });
 
