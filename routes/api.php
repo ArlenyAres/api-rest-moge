@@ -22,7 +22,8 @@ Route::get('/', [EventController::class, 'index']);
 Route::get('{id}', [EventController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'cors'])->group(function () {
-    Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/logout', [AuthLoginRegisterController::class, 'logout']);
+    //->middleware('auth:sanctum');
 });
 
 // User routes
