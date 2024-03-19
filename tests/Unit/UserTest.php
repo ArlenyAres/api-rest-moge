@@ -5,6 +5,8 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
+use App\Models\Event;
+use Illuminate\Support\Facades\Hash;
 
 class UserTest extends TestCase
 {
@@ -14,8 +16,8 @@ class UserTest extends TestCase
     public function testCreateUser()
     {
         $userData = [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
+            'name' => 'Arleny',
+            'email' => 'arleny@example.com',
             'password' => bcrypt('password'),
             'image' => 'profile.jpg',
         ];
@@ -71,6 +73,69 @@ class UserTest extends TestCase
 
         $this->assertDatabaseMissing('users', [
             'id' => $user->id
+        ]);
+    }
+
+    public function test_getSubscribedEvents_withToken()
+{
+    // Crear un usuario para autenticar
+    $user = User::create([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => Hash::make('password'),
+    ]);
+
+    // Autenticar al usuario y obtener el token
+    $token = $user->createToken('TestToken')->plainTextToken;
+
+    // Crear un evento
+    $event = Event::create([
+        'title' => 'Evento de prueba',
+        'category_id' => 1,
+        'description' => 'Descripción del evento de prueba',
+        'date' => '2021-12-31',
+        'location' => 'Ubicación del evento de prueba',
+        'user_id' => 2,
+        'image' => 'event.jpg',
+    ]);
+
+    // Realizar la solicitud POST para registrar al usuario en el evento
+    $responseRegister = $this->withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ])->postJson("/api/");
+
+    // Verificar que la solicitud de registro sea exitosa
+    $responseRegister->assertStatus(201);
+
+    // Realizar la solicitud GET a la ruta con el token de autenticación
+    $response = $this->withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ])->getJson("/" . $user->id. "subscribed-events");
+
+    // Verificar que la respuesta sea exitosa
+    $response->assertStatus(200);
+
+    // Verificar la estructura de la respuesta JSON
+    $response->assertJsonStructure([
+        'message',
+        'data',
+    ]);
+
+        // Verificar la estructura de la respuesta JSON
+        $response->assertJsonStructure([
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'title',
+                    'description',
+                    'category_id',
+                    'user_id',
+                    // 'image',
+                    'date',
+                    'location'
+                ]
+            ]
         ]);
     }
 }

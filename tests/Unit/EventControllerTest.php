@@ -158,5 +158,31 @@ public function test_show()
             ]
         ]);
     }
+
+    public function test_get_registered_users()
+    {
+        $event = Event::first();
+
+        $response = $this->getJson("/api/events/{$event->id}/registered-users");
+        if ($response->getStatusCode() !== 200) {
+            $error = $response->json();
+            var_dump($error);
+        }
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'message',
+            'data' => [
+                'current_page',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'email',
+                    ]
+                ]
+            ]
+        ]);
+    }
 }
 
