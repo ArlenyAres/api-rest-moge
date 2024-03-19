@@ -16,20 +16,17 @@ use App\Http\Controllers\RegistrationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 Route::post('/login', [AuthLoginRegisterController::class, 'login']);
-Route::get('/events', [EventController::class, 'index']);
-Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
+Route::get('/', [EventController::class, 'index']);
+Route::get('{id}', [EventController::class, 'show']);
 
-// Rutas de autenticacion
-Route::middleware(['auth:sanctum'])->group(function () {
-
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout'])->middleware('auth:sanctum');
 });
 
-// Rutas de usuario
-Route::middleware(['auth:sanctum'])->group(function () {
+// User routes
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
@@ -40,7 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 // Rutas de eventos
 // Rutas de eventos
-Route::middleware(['cors'])->group(function () {
+Route::middleware(['auth:sanctum', 'cors'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
     Route::get('/events/{id}', [EventController::class, 'show']);
