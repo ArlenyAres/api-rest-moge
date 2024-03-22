@@ -21,13 +21,13 @@ Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/', [EventController::class, 'index']);
 Route::get('{id}', [EventController::class, 'show']);
 
-Route::middleware(['auth:sanctum', 'cors'])->group(function () {
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::get('/logout', [AuthLoginRegisterController::class, 'logout']);
     //->middleware('auth:sanctum');
 });
 
 // User routes
-Route::middleware(['auth:sanctum', 'cors'])->group(function () {
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::put('{id}/profile', [UserController::class, 'updateProfile']);
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
@@ -38,7 +38,7 @@ Route::middleware(['auth:sanctum', 'cors'])->group(function () {
 
 // Rutas de eventos
 // Rutas de eventos
-Route::middleware(['auth:sanctum', 'cors'])->group(function () {
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
     Route::get('/events/{id}', [EventController::class, 'show']);
