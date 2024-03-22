@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Cors
+class HandleCors
 {
     /**
      * Handle an incoming request.
@@ -23,7 +23,9 @@ class Cors
         if (in_array($request->header('Origin'), $allowedOrigins)) {
             $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:3000');
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-            $response->headers->set('Access-Control-Allow-Headers','X-Requested-With, Content-Type, X-Token-Auth, Authorization');
+            $response->headers->set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, X-Token-Auth, Authorization', 'Accept', 'Origin', 'X-Api-Key');
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+            $response->headers->set('Access-Control-Allow-Origin: *');
         }
 
         return $response;
