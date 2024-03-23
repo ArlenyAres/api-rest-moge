@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthLoginRegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegistrationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,40 +16,38 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/category', [EventController::class, 'indexByCategory']);
+Route::get('{id}', [EventController::class, 'show']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
+    Route::post('/logout', [AuthLoginRegisterController::class, 'logout']);
+    //->middleware('auth:sanctum');
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/logout', [AuthLoginRegisterController::class, 'logout']);
-});
-
-
-// Public routes of authtication
-Route::controller(AuthLoginRegisterController::class)->group(function() {
-    Route::post('/register', 'register');
-    Route::post('/login', 'login');
-    Route::get('/logout', 'logout');
-});
-
-
-//Rutas de usuario 
-Route::controller(UserController::class)->group(function(){
-    Route::put('{id}/profile', 'updateProfile');
-    Route::get('{id}/events','getEventsCreatedByUser');
-    Route::put('{id}/update', 'updateProfile');
-    Route::get('{id}/subscribed-events', 'getSubscribedEvents');
-    
+// User routes
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
+    Route::put('{id}/profile', [UserController::class, 'updateProfile']);
+    Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
+    Route::put('{id}/update', [UserController::class, 'updateProfile']);
+    Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
+    Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
+// debemos crear una ruta que lleve a un usuario a suscribirse a un evento (es un metodo post)
 });
 
 // Rutas de eventos
-Route::controller(EventController::class)->group(function(){
-    Route::get('/events', 'index');
-    Route::post('/events/create', 'store'); // Crear un nuevo
-    Route::put('/events/{id}/edit', 'update');
-    Route::get('/events/{id}', 'show'); 
-    Route::delete('/events/{id}/delete', 'destroy'); // Eliminar uno
+// Rutas de eventos
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
+    Route::post('/events/create', [EventController::class, 'store']);
+    Route::put('/events/{id}/edit', [EventController::class, 'update']);
+    Route::get('/events/{id}', [EventController::class, 'show']);
+    Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
+    Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
+});
 
-}); 
-
+// Ruta de Sanctum
+Route::middleware(['auth:sanctum', 'cors'])->get('/user', function (Request $request) {
+    return $request->user();
+});
