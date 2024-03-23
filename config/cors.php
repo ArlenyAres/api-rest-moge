@@ -18,14 +18,6 @@ return [
         'paths' => ['api/*', 'sanctum/csrf-cookie', '/images/*', '/models/*'],
         
         'allowed_origins' => ['*'],
-    
-        'allowed_origins' => ['*'],
-        
-        'allowed_origins' => ['*'],
-        
-        'allowed_origins' => ['*'],
-        
-        'allowed_origins' => ['*'],
         
         'supportedContentTypes' => [
             'model/gltf-binary',

@@ -18,7 +18,8 @@ use App\Http\Controllers\RegistrationController;
 */
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 Route::post('/login', [AuthLoginRegisterController::class, 'login']);
-Route::get('/', [EventController::class, 'index']);
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/category', [EventController::class, 'indexByCategory']);
 Route::get('{id}', [EventController::class, 'show']);
 
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
@@ -46,50 +47,7 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 });
 
-
-// Ruta de Sanctum
 // Ruta de Sanctum
 Route::middleware(['auth:sanctum', 'cors'])->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/logout', [AuthLoginRegisterController::class, 'logout']);
-// });
-
-// // Route::group(['middleware' => ['cors']], function () {
-// //     //Rutas a las que se permitirá acceso
-// // });
-
-
-// // Public routes of authtication
-// Route::controller(AuthLoginRegisterController::class)->group(function() {
-//     Route::post('/register', 'register');
-//     Route::post('/login', 'login');
-//     Route::get('/logout', 'logout');
-// });
-
-
-// //Rutas de usuario 
-// Route::controller(UserController::class)->group(function(){
-//     Route::put('{id}/profile', 'updateProfile');
-//     Route::get('{id}/events','getEventsCreatedByUser');
-//     Route::put('{id}/update', 'updateProfile');
-//     Route::get('{id}/subscribed-events', 'getSubscribedEvents');
-    
-// });
-
-// // Rutas de eventos
-// Route::controller(EventController::class)->group(function(){
-//     Route::get('/events', 'index');
-//     Route::post('/events/create', 'store'); // Crear un nuevo
-//     Route::put('/events/{id}/edit', 'update');
-//     Route::get('/events/{id}', 'show'); 
-//     Route::delete('/events/{id}/delete', 'destroy'); // Eliminar uno
-
-// }); 
-
