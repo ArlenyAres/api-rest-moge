@@ -19,7 +19,7 @@ use App\Http\Controllers\RegistrationController;
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
-Route::get('/events/category', [EventController::class, 'indexByCategory']);
+Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 Route::get('{id}', [EventController::class, 'show']);
 
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
@@ -37,7 +37,7 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 // debemos crear una ruta que lleve a un usuario a suscribirse a un evento (es un metodo post)
 });
 
-// Rutas de eventos
+
 // Rutas de eventos
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
