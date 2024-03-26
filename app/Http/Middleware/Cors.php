@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 
 class HandleCors
 {
@@ -14,18 +13,24 @@ class HandleCors
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle($request, Closure $next)
     {
-        $allowedOrigins = ['*'];
+        $headers = [
+            'Access-Control-Allow-Origin'      => '*',
+            'Access-Control-Allow-Methods'     => 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Max-Age'           => '86400',
+            'Access-Control-Allow-Headers'     => 'Content-Type, X-Token-Auth, Authorization'
+        ];
+
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json('OK', 200, $headers);
+        }
 
         $response = $next($request);
 
-        if (in_array($request->header('Origin'), $allowedOrigins)) {
-            $response->headers->set('Access-Control-Allow-Origin', '*');
-            $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-            $response->headers->set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, X-Token-Auth, Authorization', 'Accept', 'Origin', 'X-Api-Key');
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
-            $response->headers->set('Access-Control-Allow-Origin: *');
+        foreach ($headers as $key => $value) {
+            $response->header($key, $value);
         }
 
         return $response;
