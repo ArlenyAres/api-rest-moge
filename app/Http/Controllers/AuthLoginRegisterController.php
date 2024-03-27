@@ -83,8 +83,12 @@ class AuthLoginRegisterController extends Controller
                 ], 401);
         }
 
-        $data['token'] = $user->createToken($request->email)->plainTextToken;
+        // $data['token'] = $user->createToken($request->email)->plainTextToken;
+        // $data['user'] = $user;
+
+        $data['token'] = $user->createToken('access_token')->plainTextToken;
         $data['user'] = $user;
+
 
         $response = [
             'status' => 'success',

@@ -22,6 +22,10 @@ Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 Route::get('{id}', [EventController::class, 'show']);
 
+// Route::middleware('auth:sanctum')->get('/sanctum/csrf-cookie', function (Request $request) {
+//     return response()->json(['message' => 'CSRF cookie has been set']);
+// });
+
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthLoginRegisterController::class, 'logout']);
     //->middleware('auth:sanctum');
