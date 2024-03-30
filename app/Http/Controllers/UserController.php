@@ -5,10 +5,30 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Model\Event;
+use Illuminate\Support\Facades\Auth;
 
 
 class UserController extends Controller
 {
+
+    public function show($id)
+{
+    try {
+        // Obtener el usuario autenticado
+        $authenticatedUser = Auth::user();
+
+        // Verificar si el ID solicitado coincide con el ID del usuario autenticado
+        if ($authenticatedUser && $authenticatedUser->id == $id) {
+            // Obtener los detalles del perfil del usuario autenticado
+            return response()->json(['message' => 'User information retrieved successfully', 'data' => $authenticatedUser], 200);
+        } else {
+            // Devolver un mensaje de error o redireccionar a la página de inicio de sesión
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+}
 
     public function getEventsCreatedByUser($id)
     {

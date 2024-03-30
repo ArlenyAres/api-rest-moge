@@ -34,11 +34,11 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 
 // User routes
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
-    Route::put('{id}/profile', [UserController::class, 'updateProfile']);
-    Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
-    Route::put('{id}/update', [UserController::class, 'updateProfile']);
-    Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
-    Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
+    Route::put('/user/{id}/profile', [UserController::class, 'updateProfile']); // editar el usuario
+    Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']); // ver los eventos que ha creado el usuario
+    Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']); // ver los eventos a los que se ha suscrito el usuario
+    Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']); // suscribirse a un evento
+    Route::get('/user/{id}', [UserController::class, 'show']);     // ver el perfil de un usuario
 // 
 });
 
