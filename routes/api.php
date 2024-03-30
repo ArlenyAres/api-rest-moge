@@ -38,7 +38,7 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::put('{id}/update', [UserController::class, 'updateProfile']);
     Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
     Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
-// debemos crear una ruta que lleve a un usuario a suscribirse a un evento (es un metodo post)
+// 
 });
 
 

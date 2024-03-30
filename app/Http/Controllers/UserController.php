@@ -17,13 +17,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $eventsCreated], 200);
     }
 
-    // public function getEventsCreatedByUser($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $eventsCreated = $user->events;
-    //     return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $eventsCreated], 200);
-    // }
-    
 
     public function updateUserInfo(Request $request, $id)
     {
