@@ -20,8 +20,9 @@ Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
-Route::get('{id}', [EventController::class, 'show']);
+// Route::get('{id}', [EventController::class, 'show']);
 Route::get('/events/{id}', [EventController::class, 'show']);
+
 // Route::middleware('auth:sanctum')->get('/sanctum/csrf-cookie', function (Request $request) {
 //     return response()->json(['message' => 'CSRF cookie has been set']);
 // });
@@ -41,12 +42,11 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 // 
 });
 
-
 // Rutas de eventos
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
-   
+    // Route::get('/events/{id}', [EventController::class, 'show']);
     Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
     Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 });
