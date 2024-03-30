@@ -38,7 +38,13 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
     Route::put('/user/{id}/profile', [UserController::class, 'updateProfile']); //editar perfil
 });
-// 
+// Route::middleware(['cors', 'auth:sanctum'])->group(function () {
+//     Route::get('/user/{id}/profile', [UserController::class, 'getUserProfile']);
+//     Route::put('/user/{id}/profile/update', [UserController::class, 'updateUserProfile']);
+//     Route::delete('/user/{id}/delete', [UserController::class, 'deleteUser']);
+//     // rutas que requieran el ID del usuario
+// });
+
 
 
 // Rutas de eventos
