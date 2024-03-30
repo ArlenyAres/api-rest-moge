@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Model\Event;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Support\Facades\Log;
+
 
 
 class UserController extends Controller
@@ -20,28 +25,101 @@ class UserController extends Controller
 
     public function updateUserInfo(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->only(['name', 'email', 'password']));
-        return response()->json(['message' => 'User information updated successfully', 'data' => $user], 200);
+        $data = User::findOrFail($id);
+        $data->fill($request->all());
+        $data->save();
+        return response()->json(['message' => 'User information updated successfully', 'data' => $data], 200);
+
     }
 
 
-    public function getSubscribedEvents($id)
+    public function updateProfile(Request $request)
     {
-        $user = User::findOrFail($id);
-        $subscribedEvents = $user->subscribedEvents()->get(); // Utiliza subscribedEvents() en lugar de events()
-        return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
+        $user = $request->user(); // Obtener el usuario autenticado
+
+        // Agregar un mensaje de registro para verificar los datos de entrada
+        Log::info('Datos de entrada: ', $request->all());
+
+        // Guardar los datos originales del usuario antes de actualizar
+        $originalData = $user->toArray();
+
+        // Usar fill() para asignar los nuevos valores
+        $user->fill($request->fill(['name', 'email']));
+
+        // Verificar si hay cambios después de asignar los nuevos valores
+        if ($user->isDirty()) {
+            if ($request->has('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('profile_images');
+                $user->image = $imagePath;
+            }
+
+            // Agregar un mensaje de registro para la actualización exitosa del perfil
+            Log::info('Perfil de usuario actualizado con éxito');
+
+            $user->save();
+            return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+        } else {
+            // Comparar los datos originales con los datos actuales
+            if ($user->toArray() !== $originalData) {
+                // Agregar un mensaje de registro si se detectaron cambios pero no se actualizaron
+                Log::info('Se detectaron cambios pero no se actualizó el perfil');
+
+                $user->save();
+                return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+            } else {
+                // Agregar un mensaje de registro si no se detectaron cambios
+                Log::info('No se detectaron cambios en el perfil');
+
+                return response()->json(['message' => 'No changes detected!'], 200);
+            }
+        }
     }
-
-
-    // public function getSubscribedEvents($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $subscribedEvents = $user->events()->get();
-    //     return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
-    // }
+    
 }
+    // public function updateProfile(Request $request)
+    // {
+    //     $user = $request->user(); // Obtener el usuario autenticado
 
-/* Dentro del UserController, se implementan los metodos para manejar la actualizacions del perfils de usuario, 
-la visualiza los eventos creados por el usuario, y la toso l gestin de la infor
-del perfil de usuario (nombre, correo, contraseña, imagen)*/ 
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'string|max:250',
+    //         'email' => 'string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
+    //         'password' => 'nullable|string|min:8|confirmed',
+    //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
+    //     }
+
+    //     // Guardar los datos originales del usuario antes de actualizar
+    //     $originalData = $user->toArray();
+
+    //     // Usar fill() para asignar los nuevos valores
+    //     $user->fill($request->only(['name', 'email']));
+
+    //     // Verificar si hay cambios después de asignar los nuevos valores
+    //     if ($user->isDirty()) {
+    //         if ($request->has('password')) {
+    //             $user->password = Hash::make($request->password);
+    //         }
+
+    //         if ($request->hasFile('image')) {
+    //             $imagePath = $request->file('image')->store('profile_images');
+    //             $user->image = $imagePath;
+    //         }
+
+    //         $user->save();
+    //         return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+    //     } else {
+    //         // Comparar los datos originales con los datos actuales
+    //         if ($user->toArray() !== $originalData) {
+    //             $user->save();
+    //             return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+    //         } else {
+    //             return response()->json(['message' => 'No changes detected!'], 200);
+    //         }
+    //     }
