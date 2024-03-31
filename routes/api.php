@@ -6,6 +6,9 @@ use App\Http\Controllers\AuthLoginRegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegistrationController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,19 +20,18 @@ use App\Http\Controllers\RegistrationController;
 |
 */
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+// Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 Route::get('{id}', [EventController::class, 'show']);
 Route::get('/events/{id}', [EventController::class, 'show']);
-// Route::middleware('auth:sanctum')->get('/sanctum/csrf-cookie', function (Request $request) {
-//     return response()->json(['message' => 'CSRF cookie has been set']);
-// });
 
-Route::middleware(['cors', 'auth:sanctum'])->group(function () {
-    Route::post('/logout', [AuthLoginRegisterController::class, 'logout']);
-    //->middleware('auth:sanctum');
-});
+
+
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthLoginRegisterController::class, 'logout']);
+
+
 
 // User routes
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
@@ -51,7 +53,6 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
-   
     Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
     Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 });
