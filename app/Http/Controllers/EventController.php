@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\User;
 class EventController extends Controller
 {
 
@@ -122,11 +122,15 @@ class EventController extends Controller
 
     public function getUserEvents($userId)
     {
-        // Recupera los eventos del usuario específico
-        $events = Event::where('user_id', $userId)->get();
-
+        // Encuentra al usuario por su ID
+        $user = User::findOrFail($userId);
+    
+        // Recupera los eventos asociados al usuario usando la relación 'events'
+        $events = $user->events;
+    
         // Devuelve los eventos como respuesta JSON
         return response()->json($events);
     }
+    
 
 }

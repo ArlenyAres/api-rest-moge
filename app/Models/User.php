@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -49,9 +50,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function events(): BelongsToMany
+    public function events(): hasMany
     {
-        return $this->belongsToMany(Event::class);
+        return $this->hasMany(Event::class);
     }
 
     public function subscribedEvents(): BelongsToMany
