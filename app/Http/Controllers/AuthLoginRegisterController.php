@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
+ use Illuminate\Support\Facades\Storage;
 
 
 class AuthLoginRegisterController extends Controller
@@ -23,7 +23,8 @@ class AuthLoginRegisterController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:250',
-            'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
+            // 'email' => ' required|string|email:rfc,dns|max:250|unique:users,email', // Validación de correo electrónico único
+            'email'=> 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de la imagen
         ]);
