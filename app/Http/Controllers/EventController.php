@@ -120,4 +120,13 @@ class EventController extends Controller
         return response()->json(['message' => 'Registered users retrieved successfully', 'data' => $registeredUsers], 200);
     }
 
+    public function getUserEvents($userId)
+    {
+        // Recupera los eventos del usuario específico
+        $events = Event::where('user_id', $userId)->get();
+
+        // Devuelve los eventos como respuesta JSON
+        return response()->json($events);
+    }
+
 }

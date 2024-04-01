@@ -55,6 +55,7 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::put('/events/{id}/edit', [EventController::class, 'update']);
     Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
     Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
+    Route::get('/{id}/events-by-user', [EventController::class, 'getUserEvents']);
 });
 
 // Ruta de Sanctum
