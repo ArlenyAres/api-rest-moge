@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 
 class AuthLoginRegisterController extends Controller
@@ -17,15 +18,17 @@ class AuthLoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function register(Request $request)
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:250',
             'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => 'required|string|min:8|confirmed',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de la imagen
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Validation Error!',
@@ -33,10 +36,18 @@ class AuthLoginRegisterController extends Controller
             ], 403);
         }
 
+        // Guardar la imagen de perfil
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('profile_images');
+        }
+
+        // Crear el usuario
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'image' => $imagePath, // Guardar la ruta de la imagen en la base de datos
         ]);
 
         $data['token'] = $user->createToken($request->email)->plainTextToken;
@@ -49,7 +60,8 @@ class AuthLoginRegisterController extends Controller
         ];
 
         return response()->json($response, 201);
-    }  
+    } 
+
 
     /**
      * Authenticate the user.

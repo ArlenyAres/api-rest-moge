@@ -87,7 +87,19 @@ class UserController extends Controller
         return response()->json(['message' => 'User profile retrieved successfully', 'data' => $user], 200);
     }
 
-    // public function updateUserProfile(Request $request, $id)
+    // 
+    public function deleteUser($id)
+    {
+        // Encontrar y eliminar al usuario con el ID proporcionado
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        // Retornar una respuesta exitosa
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
+}
+
+// public function updateUserProfile(Request $request, $id)
     // {
     //     // Validar los datos del formulario
     //     $validator = Validator::make($request->all(), [
@@ -116,14 +128,3 @@ class UserController extends Controller
     //     // Retornar la respuesta con el perfil actualizado del usuario
     //     return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
     // }
-
-    public function deleteUser($id)
-    {
-        // Encontrar y eliminar al usuario con el ID proporcionado
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        // Retornar una respuesta exitosa
-        return response()->json(['message' => 'User deleted successfully'], 200);
-    }
-}
