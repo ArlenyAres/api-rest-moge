@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
 {
@@ -46,15 +47,39 @@ class EventController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Actualiza un evento existente
-        $event = Event::findOrFail($id);
-        $event->update($request->all());
-        return response()->json([
-                'message' => 'Evente Update!',
-                'data' => $event
-            ], 200 );
+{
+    // Reglas de validación
+    $rules = [
+        'title' => 'string|max:255',
+        'description' => 'string',
+        'image' => 'string',
+        'location' => 'string|max:255',
+        'date' => 'date_format:Y-m-d H:i:s',
+        'category_id' => 'integer|exists:categories,id', // Asegúrate de que la categoría exista en la tabla de categorías
+    ];
+
+    // Mensajes personalizados de validación
+    $messages = [
+        'category_id.exists' => 'La categoría especificada no existe.',
+    ];
+
+    // Validar la solicitud
+    $validator = Validator::make($request->all(), $rules, $messages);
+
+    // Si la validación falla, devolver los errores
+    if ($validator->fails()) {
+        return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
     }
+
+    // Actualizar el evento existente
+    $event = Event::findOrFail($id);
+    $event->update($request->all());
+
+    return response()->json([
+        'message' => 'Event Updated!',
+        'data' => $event
+    ], 200);
+}
 
     public function show($id)
     {
