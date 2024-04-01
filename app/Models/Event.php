@@ -56,6 +56,6 @@ public function user(): BelongsTo
 
     public function registeredUsers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'registrations')->withTimestamps();
+        return $this->belongsToMany(User::class, 'registrations', 'event_id', 'user_id')->withTimestamps();
     }
 }

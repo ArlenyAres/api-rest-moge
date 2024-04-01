@@ -57,7 +57,7 @@ class User extends Authenticatable
 
     public function subscribedEvents(): BelongsToMany
     {
-        return $this->belongsToMany(Event::class, 'registrations')->withTimestamps();
+        return $this->belongsToMany(Event::class, 'registrations', 'user_id', 'event_id')->withTimestamps();
     }
 
     

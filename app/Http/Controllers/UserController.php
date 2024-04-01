@@ -97,34 +97,12 @@ class UserController extends Controller
         // Retornar una respuesta exitosa
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
+
+    public function getSubscribedEvents($id)
+    {
+        $user = User::findOrFail($id);
+        $subscribedEvents = $user->subscribedEvents()->paginate(15);
+        return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
+    }
+
 }
-
-// public function updateUserProfile(Request $request, $id)
-    // {
-    //     // Validar los datos del formulario
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'string|max:250',
-    //         'email' => 'string|email|max:250|unique:users,email,' . $id,
-    //         'password' => 'nullable|string|min:8|confirmed',
-    //     ]);
-
-    //     // Si hay errores de validación, devolverlos como respuesta
-    //     if ($validator->fails()) {
-    //         return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
-    //     }
-
-    //     // Actualizar el perfil del usuario con los datos proporcionados
-    //     $user = User::findOrFail($id);
-    //     $user->fill($request->all());
-
-    //     // Si se proporcionó una nueva contraseña, cifrarla
-    //     if ($request->has('password')) {
-    //         $user->password = bcrypt($request->password);
-    //     }
-
-    //     // Guardar los cambios en el perfil del usuario
-    //     $user->save();
-
-    //     // Retornar la respuesta con el perfil actualizado del usuario
-    //     return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
-    // }

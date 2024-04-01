@@ -126,10 +126,8 @@ class EventController extends Controller
         $user = User::findOrFail($userId);
     
         // Recupera los eventos asociados al usuario usando la relación 'events'
-        $events = $user->events;
-    
-        // Devuelve los eventos como respuesta JSON
-        return response()->json($events);
+        $events = $user->events()->paginate(15);
+        return response()->json(['message' => 'Events created by user retrieved successfully', 'data' => $events], 200);
     }
     
 
