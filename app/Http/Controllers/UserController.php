@@ -33,19 +33,19 @@ class UserController extends Controller
     }
 
     public function updateProfile(Request $request)
-    {
-        $user = $request->user(); // Obtener el usuario autenticado
+{
+    $user = $request->user(); // Obtener el usuario autenticado
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'string|max:250',
-            'email' => 'string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    $validator = Validator::make($request->all(), [
+        'name' => 'string|max:250',
+        'email' => 'string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
-        }
+    if ($validator->fails()) {
+        return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
+    }
 
         // Guardar los datos originales del usuario antes de actualizar
         $originalData = $user->toArray();
