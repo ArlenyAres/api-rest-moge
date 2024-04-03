@@ -37,25 +37,45 @@ class EventController extends Controller
 
 
     public function store(Request $request)
-    {
-        // Crea un nuevo evento
-        $event = Event::create($request->all());
-        return response()->json([
-            'message' => 'Event Create!',
-            'data'=> $event],
-            201);
+{
+    $validatedData = $request->validate([
+        'title' => 'required|string',
+        'description' => 'required|string',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5000',
+        'location' => 'required|string',
+        'date' => 'required|date',
+        'category_id' => 'required|integer',
+        'max_assistants' => 'required|integer|min:1',
+        'user_id' => 'required|integer',
+    ]);
+
+    // Manejar el archivo de imagen
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->storeAs('public/images', $imageName);
+        $validatedData['image'] = $imageName;
     }
+
+    $event = Event::create($validatedData);
+
+    return response()->json([
+        'message' => 'Evento creado exitosamente',
+        'data' => $event
+    ], 201);
+}
 
     public function update(Request $request, $id)
 {
     // Reglas de validación
     $rules = [
-        'title' => 'string|max:255',
+        'title' => 'string',
         'description' => 'string',
-        'image' => 'string',
-        'location' => 'string|max:255',
-        'date' => 'date_format:Y-m-d H:i:s',
-        'category_id' => 'integer|exists:categories,id', // Asegúrate de que la categoría exista en la tabla de categorías
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
+        'location' => 'string',
+        'date' => 'date',
+        'category_id' => 'integer|min:1|max:2',
+        'max_assistants' => 'integer|min:1',
     ];
 
     // Mensajes personalizados de validación

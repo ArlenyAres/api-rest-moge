@@ -24,7 +24,8 @@ class Event extends Model
         'location',
         'date',
         'category_id',
-        'user_id'
+        'user_id',
+        'max_assistants'
     ];
 
 
