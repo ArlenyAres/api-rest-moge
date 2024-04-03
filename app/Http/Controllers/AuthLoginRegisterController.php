@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
  use Illuminate\Support\Facades\Storage;
+ use Intervention\Image\Facades\Image;
 
 
 class AuthLoginRegisterController extends Controller
@@ -21,35 +22,30 @@ class AuthLoginRegisterController extends Controller
 
     public function register(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'name' => 'required|string|max:250',
-            // 'email' => ' required|string|email:rfc,dns|max:250|unique:users,email', // Validación de correo electrónico único
-            'email'=> 'required|email|unique:users,email',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de la imagen
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
-        }
+        // Procesamiento de la imagen con Intervention Image
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $imagePath = public_path('images/users');
 
-        // Guardar la imagen de perfil
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profile_images');
-        }
+        // Redimensionar y guardar la imagen
+        Image::make($image->getRealPath())->fit(192, 192)->save($imagePath . '/' . $imageName);
 
-        // Crear el usuario
-        $user = User::create([
+        // Crear el usuario y guardar la ruta de la imagen en la base de datos
+        $user = new User([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'image' => $imagePath, // Guardar la ruta de la imagen en la base de datos
+            'image_path' => 'images/users/' . $imageName,
         ]);
+
+        $user->save();
 
         $data['token'] = $user->createToken($request->email)->plainTextToken;
         $data['user'] = $user;
@@ -58,10 +54,13 @@ class AuthLoginRegisterController extends Controller
             'status' => 'success',
             'message' => 'User is created successfully.',
             'data' => $data,
+            'image_path' => 'images/users/' . $imageName,
         ];
 
         return response()->json($response, 201);
     } 
+
+
 
 
     /**

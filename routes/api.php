@@ -6,7 +6,8 @@ use App\Http\Controllers\AuthLoginRegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegistrationController;
-
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 
 
 /*
@@ -19,12 +20,33 @@ use App\Http\Controllers\RegistrationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+
+
+
 // Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 Route::get('{id}', [EventController::class, 'show']);
 Route::get('/events/{id}', [EventController::class, 'show']);
+
+Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+
+Route::get('/user/image/{filename}', function ($filename) {
+    $path = public_path('images/users/' . $filename);
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+});
+
 
 
 
