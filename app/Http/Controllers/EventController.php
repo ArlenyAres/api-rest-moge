@@ -76,6 +76,7 @@ class EventController extends Controller
         'date' => 'date',
         'category_id' => 'integer|min:1|max:2',
         'max_assistants' => 'integer|min:1',
+        'user_id' => 'integer',
     ];
 
     // Mensajes personalizados de validación
