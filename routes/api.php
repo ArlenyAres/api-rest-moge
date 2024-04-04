@@ -60,6 +60,8 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
     Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
+    Route::delete('/events/{eventId}/unregister', [RegistrationController::class, 'unregister']);
+    Route::get('/user/{id}', [UserController::class, 'getUserProfile']); //ver perfil
     Route::post('/user/{id}/profile', [UserController::class, 'updateProfile']); //editar perfil
 });
 // Route::middleware(['cors', 'auth:sanctum'])->group(function () {
@@ -74,7 +76,7 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 // Rutas de eventos
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
-    Route::put('/events/{id}/edit', [EventController::class, 'update']);
+    Route::post('/events/{id}/edit', [EventController::class, 'update']);
     Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
     Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
     Route::get('/{id}/events-by-user', [EventController::class, 'getUserEvents']);

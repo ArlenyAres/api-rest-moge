@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
+
 class RegistrationController extends Controller
 {
     public function register(Request $request, $eventId)
@@ -42,7 +43,7 @@ class RegistrationController extends Controller
             ->first();
         if ($registration) {
             $registration->delete();
-            return response()->json(null, 204);
+            return response()->json(['message' => 'Unregistered successfully'], 200);
         }
         return response()->json(['error' => 'No se encontró la inscripción'], 404);
     }
