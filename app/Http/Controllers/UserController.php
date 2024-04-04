@@ -52,7 +52,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         
         // Construir la URL de la imagen
-        $imageUrl = url("storage/images/users/$user->image_path");
+        $imageUrl = url("storage/$user->image_path");
         
         // Agregar la URL de la imagen al objeto de usuario
         $user->image_url = $user->image_path ? $imageUrl : null;
