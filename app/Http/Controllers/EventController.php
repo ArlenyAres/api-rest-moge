@@ -13,17 +13,25 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $eventsQuery = Event::query();
-
-        // Filtra si se proporciona un parametro de categoria por el input
+    
         if ($request->has('category_id')) {
             $category_id = $request->input('category_id');
             $eventsQuery->where('category_id', $category_id);
         }
-
-        // si no muentra todos los eventos con paginacion hasta 15
+    
+        // Obtener eventos paginados
         $events = $eventsQuery->paginate(15);
-
-        return response()->json($events, 200);
+    
+        // Iterar sobre cada evento para agregar los detalles del usuario
+        foreach ($events as $event) {
+            $user = User::findOrFail($event->user_id);
+            $userImageUrl = url($user->image_path);
+            $event->user_name = $user->name;
+            $event->user_image_url = $userImageUrl;
+        }
+    
+        // Devolver la respuesta JSON con los eventos actualizados
+        return response()->json(['message' => 'Events retrieved successfully', 'data' => $events], 200);
     }
 
     public function indexByCategory(Request $request, $id)
@@ -112,18 +120,26 @@ class EventController extends Controller
             $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
         }
     
-        $event->update($request->all());
+        $event->update($request->except('image')); // Actualiza todos los campos excepto la imagen
+    
+        // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
+        if ($event->user) {
+            $user = $event->user;
+            $userImageUrl = url("storage/images/$user->image_path");
+            $user->image_url = $userImageUrl;
+        }
     
         // Construir la URL de la imagen del evento
-        $imageUrl = url("storage/images/$event->image");
-        $event->image_url = $imageUrl;
+        $eventImageUrl = url("storage/images/$event->image");
+        $event->image_url = $eventImageUrl;
     
         return response()->json([
             'message' => 'Event Updated!',
             'data' => $event
         ], 200);
     }
-
+    
+    
     public function show($id)
     {
         $event = Event::find($id);
@@ -132,11 +148,17 @@ class EventController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
     
-        // Construir la URL de la imagen del evento
         $imageUrl = url("storage/images/$event->image");
         $event->image_url = $imageUrl;
+
+        $user = $event->user;
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found for this event'], 404);
+        }
+        $userImageUrl = url("storage/$user->image_path");
+        $event->user_image_url = $userImageUrl;
     
-        // Devolver el evento encontrado con la URL de la imagen
         return response()->json(['data' => $event], 200);
     }
 
@@ -156,6 +178,17 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($eventId);
         $registeredUsers = $event->registeredUsers()->paginate(5); 
+        if ($registeredUsers->isEmpty()) {
+            return response()->json(['message' => 'No registered users found for this event'], 404);
+        }
+
+        if ($registeredUsers->isNotEmpty()) {
+            foreach ($registeredUsers as $user) {
+                $imageUrl = url("storage/$user->image_path");
+                $user->image_url = $imageUrl;
+            }
+        }
+        
         return response()->json(['message' => 'Registered users retrieved successfully', 'data' => $registeredUsers], 200);
     }
 

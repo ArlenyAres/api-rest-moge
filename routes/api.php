@@ -46,11 +46,11 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
 });
 
 // Rutas de eventos
+Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::post('/events/{id}/edit', [EventController::class, 'update']);
     Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
-    Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
     Route::get('/{id}/events-by-user', [EventController::class, 'getUserEvents']);
 });
 
