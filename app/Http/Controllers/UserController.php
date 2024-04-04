@@ -37,119 +37,45 @@ class UserController extends Controller
 {
     $user = $request->user(); // Obtener el usuario autenticado
 
-<<<<<<< HEAD
-        // Preparar las reglas de validación condicionales
-        $rules = [
-            'name' => 'nullable|string|max:250',
-            'email' => 'nullable|string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ];
-
-        // Validar los datos del formulario de actualización
-        $validate = Validator::make($request->all(), $rules);
-
-        // Si la validación falla, devolver un error
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 422);
-        }
-=======
     $validator = Validator::make($request->all(), [
-        'name' => 'string|max:250',
-        'email' => 'string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
+        'name' => 'nullable|string|max:250',
+        'email' => 'nullable|string|email:rfc,dns|max:250|unique:users,email,',
         'password' => 'nullable|string|min:8|confirmed',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000',
     ]);
 
     if ($validator->fails()) {
-        return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
+        return response()->json(['message' => $validator->errors()->first()], 400);
     }
->>>>>>> 29cac21 (changes to match front ticket)
+    // Guardar los datos originales del usuario antes de actualizar
+    $originalData = $user->toArray();
 
-        // Preparar los datos para la actualización
-        $userData = [];
-        if ($request->has('name')) {
-            $userData['name'] = $request->name;
-        }
-        if ($request->has('email')) {
-            $userData['email'] = $request->email;
-        }
+    // Usar fill() para asignar los nuevos valores
+    $user->fill($request->only(['name', 'email']));
+
+    // Verificar si hay cambios después de asignar los nuevos valores
+    if ($user->isDirty()) {
         if ($request->has('password')) {
-            $userData['password'] = Hash::make($request->password);
+            $user->password = Hash::make($request->password);
         }
+
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('profile_images');
-            $userData['image'] = $imagePath;
+            $user->image = $imagePath;
         }
 
-        // Actualizar los campos del usuario con los datos preparados
-        if (!empty($userData)) {
-            $user->update($userData);
+        $user->save();
+        return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+    } else {
+        // Comparar los datos originales con los datos actuales
+        if ($user->toArray() !== $originalData) {
+            $user->save();
+            return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
+        } else {
+            return response()->json(['message' => 'No changes detected!'], 200);
         }
-
-        // Recargar los datos actualizados del usuario después de guardarlos
-        $updatedUser = User::findOrFail($user->id);
-
-        // Devolver una respuesta de éxito con los nuevos datos guardados
-        return response()->json(['message' => 'User profile updated successfully', 'data' => $updatedUser], 200);
     }
-
-
-
-
-
-    // public function updateProfile(Request $request)
-    // {
-    //     try {
-    //         $user = $request->user(); // Obtener el usuario autenticado
-
-    //         $validator = Validator::make($request->all(), [
-    //             'name' => 'sometimes|string|max:250',
-    //             'email' => 'sometimes|string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
-    //             'password' => 'nullable|string|min:8|confirmed',
-    //             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
-    //         }
-
-    //         // Usar fill() para asignar los nuevos valores
-    //         $user->fill($request->only(['name', 'email']));
-
-    //         Log::info('Request data:', $request->all());
-    //         Log::info('User data:', $user->toArray());
-
-    //         // Verificar si hay cambios después de asignar los nuevos valores
-    //         if ($user->isDirty()) {
-    //             Log::info('User is dirty: ' . ($user->isDirty() ? 'true' : 'false'));
-
-    //             if ($request->has('password')) {
-    //                 $user->password = Hash::make($request->password);
-    //             }
-
-    //             if ($request->hasFile('image')) {
-    //                 $imagePath = $request->file('image')->store('profile_images');
-    //                 $user->image = $imagePath;
-    //             }
-
-    //             $user->save();
-    //             return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
-    //         } else {
-    //             return response()->json(['message' => 'No changes detected!'], 200);
-    //         }
-    //     } catch (\Exception $exception) {
-    //         // Log the exception
-    //         Log::error('Error updating user profile: ' . $exception->getMessage());
-    //         // Return error response
-    //         return response()->json(['message' => 'Error updating user profile'], 500);
-    //     }
-    // }
-
+}
 
 
     public function getUserProfile($id)

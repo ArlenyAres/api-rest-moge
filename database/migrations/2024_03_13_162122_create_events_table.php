@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('location');
             $table->dateTime('date');
             $table->foreignId('category_id')->constrained('categories');
-            $table->integer('attendees_count')->default(0);
+            $table->integer('max_assistants')->default(0);
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
