@@ -23,31 +23,25 @@ Route::post('/register', [AuthLoginRegisterController::class, 'register']);
 // Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
-Route::get('{id}', [EventController::class, 'show']);
+// Route::get('{id}', [EventController::class, 'show']);
 Route::get('/events/{id}', [EventController::class, 'show']);
 
+// Route::middleware('auth:sanctum')->get('/sanctum/csrf-cookie', function (Request $request) {
+//     return response()->json(['message' => 'CSRF cookie has been set']);
+// });
 
-
-Route::post('/login', [AuthLoginRegisterController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthLoginRegisterController::class, 'logout']);
-
-
+Route::middleware(['cors', 'auth:sanctum'])->group(function () {
+    Route::post('/logout', [AuthLoginRegisterController::class, 'logout']);
+    //->middleware('auth:sanctum');
+});
 
 // User routes
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::get('{id}/events', [UserController::class, 'getEventsCreatedByUser']);
     Route::get('/{id}/subscribed-events', [UserController::class, 'getSubscribedEvents']);
     Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
-    Route::post('/user/{id}/profile', [UserController::class, 'updateProfile']); //editar perfil
+// 
 });
-// Route::middleware(['cors', 'auth:sanctum'])->group(function () {
-//     Route::get('/user/{id}/profile', [UserController::class, 'getUserProfile']);
-//     Route::put('/user/{id}/profile/update', [UserController::class, 'updateUserProfile']);
-//     Route::delete('/user/{id}/delete', [UserController::class, 'deleteUser']);
-//     // rutas que requieran el ID del usuario
-// });
-
-
 
 // Rutas de eventos
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
