@@ -34,9 +34,10 @@ class UserController extends Controller
 
 
     public function updateProfile(Request $request)
-    {
-        $user = $request->user(); // Obtener el usuario autenticado
+{
+    $user = $request->user(); // Obtener el usuario autenticado
 
+<<<<<<< HEAD
         // Preparar las reglas de validación condicionales
         $rules = [
             'name' => 'nullable|string|max:250',
@@ -56,6 +57,18 @@ class UserController extends Controller
                 'data' => $validate->errors(),
             ], 422);
         }
+=======
+    $validator = Validator::make($request->all(), [
+        'name' => 'string|max:250',
+        'email' => 'string|email:rfc,dns|max:250|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
+    }
+>>>>>>> 29cac21 (changes to match front ticket)
 
         // Preparar los datos para la actualización
         $userData = [];
