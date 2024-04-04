@@ -20,7 +20,7 @@ use App\Http\Controllers\RegistrationController;
 |
 */
 Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-// Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::post('/login', [AuthLoginRegisterController::class, 'login']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 // Route::get('{id}', [EventController::class, 'show']);
