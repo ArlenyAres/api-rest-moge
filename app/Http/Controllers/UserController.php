@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\Log;
-
-
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -78,14 +77,19 @@ class UserController extends Controller
 }
 
 
-    public function getUserProfile($id)
-    {
-        // Obtener el perfil del usuario con el ID proporcionado
-        $user = User::findOrFail($id);
-
-        // Retornar los datos del perfil del usuario
-        return response()->json(['message' => 'User profile retrieved successfully', 'data' => $user], 200);
-    }
+public function getUserProfile($id)
+{
+    $user = User::findOrFail($id);
+    
+    // Construir la URL de la imagen
+    $imageUrl = url($user->image_path);
+    
+    // Agregar la URL de la imagen al objeto de usuario
+    $user->image_url = $user->image_path ? $imageUrl : null;
+    
+    // Devolver la respuesta JSON con la URL de la imagen
+    return response()->json(['message' => 'User profile retrieved successfully', 'data' => $user], 200);
+}
 
     // 
     public function deleteUser($id)

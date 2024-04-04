@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
- use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 
 class AuthLoginRegisterController extends Controller
@@ -23,38 +25,51 @@ class AuthLoginRegisterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:250',
-            // 'email' => ' required|string|email:rfc,dns|max:250|unique:users,email', // Validación de correo electrónico único
-            'email'=> 'required|email|unique:users,email',
+            'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000',
+            'password_confirmation' => 'required|string|min:8',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation Error!',
-                'errors' => $validator->errors(),
-            ], 422);
+        try {
+            // Procesar la imagen y crear el usuario
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->extension();
+                $imagePath = $image->storeAs('images/users', $imageName, 'public');
+            }
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'password_confirmation' => Hash::make($request->password_confirmation),
+                'image_path' => $imagePath,
+            ]);
+
+            $user->save();
+
+            // Generar token de acceso
+            $data['token'] = $user->createToken($request->email)->plainTextToken;
+            $data['user'] = $user;
+
+            // Respuesta exitosa
+            $response = [
+                'status' => 'success',
+                'message' => 'User is created successfully.',
+                'data' => $data,
+                'image_path' => 'images/users/' . $imageName,
+            ];
+
+            return response()->json($response, 201);
+        } catch (\Exception $e) {
+            // Manejar el error
+            Log::error('Error during user registration: ' . $e->getMessage());
+            return response()->json(['error' => 'Error during user registration'], 500);
         }
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profile_images');
-            $user->image = $imagePath;
-        }
-
-        $user->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully.',
-            'user' => $user,
-        ], 201);
     }
+
 
 
 
