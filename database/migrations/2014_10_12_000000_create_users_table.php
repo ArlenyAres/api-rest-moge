@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('image')->default('https://i.pravatar.cc/300?img=1');
+            $table->string('image_path')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
