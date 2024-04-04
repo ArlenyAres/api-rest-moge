@@ -26,25 +26,40 @@ class UserController extends Controller
     {
         $data = User::findOrFail($id);
         $data->fill($request->all());
+    
+        // Actualizar la imagen del usuario si se proporciona una nueva imagen
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->extension();
+            $imagePath = $image->storeAs('images/users', $imageName, 'public');
+            $data->image_path = $imagePath;
+        }
+    
         $data->save();
+    
+        // Construir la URL de la imagen
+        $imageUrl = $data->image_path ? url("storage/images/users/$data->image_path") : null;
+    
+        // Agregar la URL de la imagen al objeto de usuario
+        $data->image_url = $imageUrl;
+    
+        // Retornar la respuesta JSON con la URL de la imagen
         return response()->json(['message' => 'User information updated successfully', 'data' => $data], 200);
+    }
 
-    }   
-
-public function getUserProfile($id)
-{
-    $user = User::findOrFail($id);
-    
-    
-    // Construir la URL de la imagen
-    $imageUrl = url($user->image_path);
-    
-    // Agregar la URL de la imagen al objeto de usuario
-    $user->image_url = $user->image_path ? $imageUrl : null;
-    
-    // Devolver la respuesta JSON con la URL de la imagen
-    return response()->json(['message' => 'User profile retrieved successfully', 'data' => $user], 200);
-}
+    public function getUserProfile($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Construir la URL de la imagen
+        $imageUrl = url("storage/images/users/$user->image_path");
+        
+        // Agregar la URL de la imagen al objeto de usuario
+        $user->image_url = $user->image_path ? $imageUrl : null;
+        
+        // Devolver la respuesta JSON con la URL de la imagen
+        return response()->json(['message' => 'User profile retrieved successfully', 'data' => $user], 200);
+    }
 
     // 
     public function deleteUser($id)

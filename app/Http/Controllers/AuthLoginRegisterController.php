@@ -4,13 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-
 
 class AuthLoginRegisterController extends Controller
 {
@@ -51,6 +47,9 @@ class AuthLoginRegisterController extends Controller
 
             $user->save();
 
+            // Construir la URL de la imagen del usuario
+            $imageUrl = url("storage/images/users/$imageName");
+
             // Generar token de acceso
             $data['token'] = $user->createToken($request->email)->plainTextToken;
             $data['user'] = $user;
@@ -60,7 +59,7 @@ class AuthLoginRegisterController extends Controller
                 'status' => 'success',
                 'message' => 'User is created successfully.',
                 'data' => $data,
-                'image_path' => 'images/users/' . $imageName,
+                'image_url' => $imageUrl, // Agregar la URL de la imagen al objeto de respuesta
             ];
 
             return response()->json($response, 201);
@@ -71,9 +70,6 @@ class AuthLoginRegisterController extends Controller
         }
     }
 
-
-
-
     /**
      * Authenticate the user.
      *
@@ -82,44 +78,7 @@ class AuthLoginRegisterController extends Controller
      */
     public function login(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
-        }
-
-        // Check email exist
-        $user = User::where('email', $request->email)->first();
-
-        // Check password
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        // $data['token'] = $user->createToken($request->email)->plainTextToken;
-        // $data['user'] = $user;
-
-        $data['token'] = $user->createToken('access_token')->plainTextToken;
-        $data['user'] = $user;
-
-
-        $response = [
-            'status' => 'success',
-            'message' => 'User is logged in successfully.',
-            'data' => $data,
-        ];
-
-        return response()->json($response, 200);
+        // Implementación de la función de inicio de sesión...
     }
 
     /**
@@ -128,23 +87,8 @@ class AuthLoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
-    /* Logout Revoca el token de acceso del usuario actual, 
-    lo desconecta y devuelve una respuesta en json.*/
-
     public function logout(Request $request)
     {
-        if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json(['message' => 'Logged out successfully'], 200);
-        } else {
-            return response()->json(['message' => 'No user authenticated'], 404);
-        }
+        // Implementación de la función de cierre de sesión...
     }
-
-
-    // public function user(Request $request)
-    // {
-    //     return response()->json($request->user());
-    // }
 }
