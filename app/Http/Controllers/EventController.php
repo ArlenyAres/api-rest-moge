@@ -22,23 +22,24 @@ class EventController extends Controller
         // Obtener eventos paginados
         $events = $eventsQuery->paginate(15);
 
-        // Iterar sobre cada evento para agregar los detalles del usuario
+        // Iterar sobre cada evento para agregar los detalles del usuario y corregir la URL de la imagen
         foreach ($events as $event) {
-            // Construir la URL de la imagen del evento
-            $eventImageUrl = url($event->image); // Asumiendo que la columna se llama 'image'
-
-            // Agregar la URL de la imagen del evento a cada evento
-            $event->image_url = $eventImageUrl;
+            // Corregir la URL de la imagen del evento
+            $event->image_url = $event->image ? url("storage/images/$event->image") : null;
 
             // Obtener y agregar los detalles del usuario
             $user = User::findOrFail($event->user_id);
             $event->user_name = $user->name;
-            $event->user_image_url = url($user->image_path);
+            // Corregir la URL de la imagen del usuario
+            $event->user_image_url = $user->image_path ? url("storage/images/users/$user->image_path") : null;
         }
 
         // Devolver la respuesta JSON con los eventos actualizados
         return response()->json(['message' => 'Events retrieved successfully', 'data' => $events], 200);
     }
+
+
+
 
     public function indexByCategory(Request $request, $id)
     {
