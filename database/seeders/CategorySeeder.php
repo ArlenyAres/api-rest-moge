@@ -11,14 +11,14 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        // Check if categories already exist
-        if (Category::count() === 0) {
-            // Create 'presencial' category
-            Category::create(['name' => 'presencial']);
+        // // Check if categories already exist
+        // if (Category::count() === 0) {
+        //     // Create 'presencial' category
+        //     Category::create(['name' => 'presencial']);
 
-            // Create 'online' category
-            Category::create(['name' => 'online']);
-        }
+        //     // Create 'online' category
+        //     Category::create(['name' => 'online']);
+        // }
     }
 }
 ?>

@@ -18,16 +18,16 @@ class EventSeeder extends Seeder
     public function run()
     {
 
-        // Crear categorías
-        Category::create(['name' => 'Presencial']);
-        Category::create(['name' => 'Online']);
+        // // Crear categorías
+        // Category::create(['name' => 'Presencial']);
+        // Category::create(['name' => 'Online']);
 
-        // Crear eventos
-        Event::factory(25)->create([
-            'category_id' => function () {
-                // Escoge aleatoriamente entre los ids de las categorías creadas
-                return Category::pluck('id')->random();
-            },
-        ]);
+        // // Crear eventos
+        // Event::factory(25)->create([
+        //     'category_id' => function () {
+        //         // Escoge aleatoriamente entre los ids de las categorías creadas
+        //         return Category::pluck('id')->random();
+        //     },
+        // ]);
     }
 }
