@@ -13,15 +13,15 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $eventsQuery = Event::query();
-    
+
         if ($request->has('category_id')) {
             $category_id = $request->input('category_id');
             $eventsQuery->where('category_id', $category_id);
         }
-    
+
         // Obtener eventos paginados
         $events = $eventsQuery->paginate(15);
-    
+
         // Iterar sobre cada evento para agregar los detalles del usuario
         foreach ($events as $event) {
             $user = User::findOrFail($event->user_id);
@@ -29,7 +29,7 @@ class EventController extends Controller
             $event->user_name = $user->name;
             $event->user_image_url = $userImageUrl;
         }
-    
+
         // Devolver la respuesta JSON con los eventos actualizados
         return response()->json(['message' => 'Events retrieved successfully', 'data' => $events], 200);
     }
@@ -56,7 +56,7 @@ class EventController extends Controller
             'max_assistants' => 'required|integer|min:1',
             'user_id' => 'required|integer',
         ]);
-    
+
         try {
             // Manejar el archivo de imagen del evento
             if ($request->hasFile('image')) {
@@ -65,12 +65,12 @@ class EventController extends Controller
                 $image->storeAs('public/images', $imageName);
                 $validatedData['image'] = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
             }
-    
+
             $event = Event::create($validatedData);
-    
+
             $imageUrl = url("storage/images/$imageName");
             $event->image_url = $imageUrl;
-    
+
             return response()->json([
                 'message' => 'Evento creado exitosamente',
                 'data' => $event
@@ -81,7 +81,7 @@ class EventController extends Controller
             return response()->json(['error' => 'Error durante la creación del evento'], 500);
         }
     }
-    
+
     public function update(Request $request, $id)
     {
         // Reglas de validación
@@ -95,23 +95,23 @@ class EventController extends Controller
             'max_assistants' => 'integer|min:1',
             'user_id' => 'integer',
         ];
-    
+
         // Mensajes personalizados de validación
         $messages = [
             'category_id.exists' => 'La categoría especificada no existe.',
         ];
-    
+
         // Validar la solicitud
         $validator = Validator::make($request->all(), $rules, $messages);
-    
+
         // Si la validación falla, devolver los errores
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
         }
-    
+
         // Actualizar el evento existente
         $event = Event::findOrFail($id);
-    
+
         // Actualizar el campo de imagen si se proporciona una nueva imagen
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -119,37 +119,38 @@ class EventController extends Controller
             $image->storeAs('public/images', $imageName);
             $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
         }
-    
+
         $event->update($request->except('image')); // Actualiza todos los campos excepto la imagen
-    
+
         // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
         if ($event->user) {
             $user = $event->user;
             $userImageUrl = url("storage/images/$user->image_path");
             $user->image_url = $userImageUrl;
         }
-    
+
         // Construir la URL de la imagen del evento
         $eventImageUrl = url("storage/images/$event->image");
         $event->image_url = $eventImageUrl;
-    
+
         return response()->json([
             'message' => 'Event Updated!',
             'data' => $event
         ], 200);
     }
-    
-    
+
+
     public function show($id)
     {
         $event = Event::find($id);
-    
+
         if (!$event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
-    
+
         $imageUrl = url("storage/images/$event->image");
         $event->image_url = $imageUrl;
+        //en metodo get simple sin auth en los eventos falta completar la url de imagens ahora solo sale el nombre salto sotorage/image...
 
         $user = $event->user;
 
@@ -158,7 +159,7 @@ class EventController extends Controller
         }
         $userImageUrl = url("storage/$user->image_path");
         $event->user_image_url = $userImageUrl;
-    
+
         return response()->json(['data' => $event], 200);
     }
 
@@ -177,7 +178,7 @@ class EventController extends Controller
     public function getRegisteredUsers($eventId)
     {
         $event = Event::findOrFail($eventId);
-        $registeredUsers = $event->registeredUsers()->paginate(5); 
+        $registeredUsers = $event->registeredUsers()->paginate(5);
         if ($registeredUsers->isEmpty()) {
             return response()->json(['message' => 'No registered users found for this event'], 404);
         }
@@ -188,7 +189,7 @@ class EventController extends Controller
                 $user->image_url = $imageUrl;
             }
         }
-        
+
         return response()->json(['message' => 'Registered users retrieved successfully', 'data' => $registeredUsers], 200);
     }
 
