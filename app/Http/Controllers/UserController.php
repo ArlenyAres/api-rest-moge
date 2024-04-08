@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+
 class UserController extends Controller
 {
 
@@ -116,10 +117,16 @@ class UserController extends Controller
     }
 
     public function getSubscribedEvents($id)
-    {
-        $user = User::findOrFail($id);
-        $subscribedEvents = $user->subscribedEvents()->paginate(15);
-        return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
+{
+    $user = User::findOrFail($id);
+    $subscribedEvents = $user->subscribedEvents()->paginate(15);
+
+    foreach ($subscribedEvents as $event) {
+        $imageUrl = $event->image ? url("storage/images/$event->image") : null;
+        $event->image_url = $imageUrl;
     }
+
+    return response()->json(['message' => 'Subscribed events retrieved successfully', 'data' => $subscribedEvents], 200);
+}
 
 }
