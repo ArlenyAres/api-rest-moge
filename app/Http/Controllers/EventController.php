@@ -24,10 +24,16 @@ class EventController extends Controller
 
         // Iterar sobre cada evento para agregar los detalles del usuario
         foreach ($events as $event) {
+            // Construir la URL de la imagen del evento
+            $eventImageUrl = url($event->image); // Asumiendo que la columna se llama 'image'
+
+            // Agregar la URL de la imagen del evento a cada evento
+            $event->image_url = $eventImageUrl;
+
+            // Obtener y agregar los detalles del usuario
             $user = User::findOrFail($event->user_id);
-            $userImageUrl = url($user->image_path);
             $event->user_name = $user->name;
-            $event->user_image_url = $userImageUrl;
+            $event->user_image_url = url($user->image_path);
         }
 
         // Devolver la respuesta JSON con los eventos actualizados
@@ -60,15 +66,18 @@ class EventController extends Controller
         try {
             // Manejar el archivo de imagen del evento
             if ($request->hasFile('image')) {
+                // Obtener la imagen del evento
                 $image = $request->file('image');
+
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('public/images', $imageName);
+
+                $imagePath = $image->storeAs('public/images', $imageName);
                 $validatedData['image'] = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
             }
 
             $event = Event::create($validatedData);
 
-            $imageUrl = url("storage/images/$imageName");
+            $imageUrl = $event->image ? url("storage/images/$event->image") : null;
             $event->image_url = $imageUrl;
 
             return response()->json([
@@ -116,7 +125,7 @@ class EventController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images', $imageName);
+            $imagePath = $image->storeAs('public/images', $imageName);
             $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
         }
 
@@ -125,12 +134,12 @@ class EventController extends Controller
         // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
         if ($event->user) {
             $user = $event->user;
-            $userImageUrl = url("storage/images/$user->image_path");
+            $userImageUrl = url("storage/images/users/$user->image_path");
             $user->image_url = $userImageUrl;
         }
 
         // Construir la URL de la imagen del evento
-        $eventImageUrl = url("storage/images/$event->image");
+        $eventImageUrl = $event->image ? url("storage/images/$event->image") : null;
         $event->image_url = $eventImageUrl;
 
         return response()->json([
@@ -148,20 +157,21 @@ class EventController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
 
-        $imageUrl = url("storage/images/$event->image");
+        $imageUrl = $event->image ? url("storage/images/$event->image") : null;
         $event->image_url = $imageUrl;
-        //en metodo get simple sin auth en los eventos falta completar la url de imagens ahora solo sale el nombre salto sotorage/image...
 
         $user = $event->user;
 
         if (!$user) {
             return response()->json(['message' => 'User not found for this event'], 404);
         }
-        $userImageUrl = url("storage/$user->image_path");
+
+        $userImageUrl = $user->image_path ? url("storage/images/users/$user->image_path") : null;
         $event->user_image_url = $userImageUrl;
 
         return response()->json(['data' => $event], 200);
     }
+
 
     public function destroy($id)
     {
