@@ -56,7 +56,7 @@ class EventController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000',
             'location' => 'required|string',
             'date' => 'required|date',
             'category_id' => 'required|integer|min:1',
@@ -94,29 +94,48 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Reglas de validación
-        $rules = [
-            'title' => 'string',
-            'description' => 'string',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
-            'location' => 'string',
-            'date' => 'date',
-            'category_id' => 'integer|min:1|max:2',
-            'max_assistants' => 'integer|min:1',
-            'user_id' => 'integer',
-        ];
+        // Definir las reglas de validación inicialmente vacías
+        $rules = [];
 
-        // Mensajes personalizados de validación
-        $messages = [
-            'category_id.exists' => 'La categoría especificada no existe.',
-        ];
+        // Validar solo los campos que se proporcionan en la solicitud
+        if ($request->filled('title')) {
+            $rules['title'] = 'nullable|string|max:250';
+        }
 
-        // Validar la solicitud
-        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($request->filled('description')) {
+            $rules['description'] = 'nullable|string';
+        }
+
+        if ($request->hasFile('image')) {
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000';
+        }
+
+        if ($request->filled('location')) {
+            $rules['location'] = 'nullable|string';
+        }
+
+        if ($request->filled('date')) {
+            $rules['date'] = 'nullable|date';
+        }
+
+        if ($request->filled('category_id')) {
+            $rules['category_id'] = 'nullable|integer|min:1|max:2';
+        }
+
+        if ($request->filled('max_assistants')) {
+            $rules['max_assistants'] = 'nullable|integer|min:1';
+        }
+
+        if ($request->filled('user_id')) {
+            $rules['user_id'] = 'nullable|integer';
+        }
+
+        // Validar los campos de acuerdo a las reglas definidas
+        $validator = Validator::make($request->all(), $rules);
 
         // Si la validación falla, devolver los errores
         if ($validator->fails()) {
-            return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
+            return response()->json(['message' => $validator->errors()->first()], 400);
         }
 
         // Actualizar el evento existente
@@ -130,7 +149,11 @@ class EventController extends Controller
             $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
         }
 
-        $event->update($request->except('image')); // Actualiza todos los campos excepto la imagen
+        // Usar fill() para asignar los nuevos valores
+        $event->fill($request->except(['image', '_method', '_token'])); // Actualiza todos los campos excepto la imagen
+
+        // Guardar los cambios en el evento
+        $event->save();
 
         // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
         if ($event->user) {
@@ -148,6 +171,7 @@ class EventController extends Controller
             'data' => $event
         ], 200);
     }
+
 
 
     public function show($id)
