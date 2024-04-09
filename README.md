@@ -1,3 +1,118 @@
+
+![logo moge](https://github.com/01joanna/codecrafters-app/assets/122264533/35568a99-cf77-451e-93be-58dd18672ac5)
+
+
+#  API REST de Moge: 
+Portal de Eventos Tecnológicos
+
+## Descripción
+Moge es una plataforma web dedicada a conectar a entusiastas de la tecnología con una amplia gama de eventos y oportunidades de aprendizaje. Nuestro objetivo es mantener a nuestra comunidad al día con las últimas tendencias y avances en el campo de la tecnología, ofreciendo una selección cuidadosa de eventos diseñados y creados por los integrantes de la comunidad
+
+
+## Introducción
+Este proyecto es el backend de la plataforma web de Moge, diseñada para facilitar la organización de eventos tecnológicos. El backend se construye utilizando PHP con el framework Laravel, proporcionando una API RESTful que interactúa con una base de datos MySQL.
+
+#### 📝 Requisitos
+PHP 7.4 o superior
+Composer
+MySQL 5.7 o superior
+
+#### 🛠️ Configuración
+Clonar el repositorio: 
+Clona este repositorio en tu máquina local.
+
+git clone (https://github.com/ArlenyAres/api-rest.git)
+
+#### :small_red_triangle: Instalar dependencias: Navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias de PHP.
+composer install
+
+#### :small_red_triangle:  Configurar la base de datos: 
+Crea una base de datos MySQL y configura las credenciales en el archivo .env.
+
+DB_CONNECTION=mysql
+
+DB_HOST=localhost
+
+DB_PORT=3306
+
+DB_DATABASE=api-rest
+
+DB_USERNAME=tu_usuario
+
+DB_PASSWORD=tu_contraseña
+
+#### :small_red_triangle: Migraciones y Seeders: 
+
+Ejecuta las migraciones y seeders para crear las tablas y datos iniciales en la base de datos.
+
+php artisan migrate
+php artisan db:seed
+
+#### :small_red_triangle: Generar APP_KEY: Genera una clave de aplicación para Laravel.
+
+php artisan key:generate
+
+#### :small_red_triangle: Ejecutar el servidor: Inicia el servidor de desarrollo de Laravel.
+
+php artisan serve
+
+
+### :lock: La API REST de Moge se basa en Laravel y utiliza Laravel Sanctum para la autenticación, APIs basadas en tokens simples
+
+#### La API REST de Mogue utiliza Laravel y Sanctum para proporcionar una autenticación segura y eficiente. 
+Al utilizar Sanctum, se simplifica el proceso de autenticación y se mantiene una alta seguridad, permitiendo a los usuarios acceder a recursos protegidos de manera controlada y segura.
+
+#### :closed_lock_with_key: Middleware de Sanctum:
+Se añade el middleware de Sanctum al archivo kernel.php para asegurar que las solicitudes a la API estén protegidas y sean autenticadas correctamente.
+Uso de Traits: En el modelo User, se utiliza el trait HasApiTokens de Sanctum para habilitar la generación de tokens de API para los usuarios.
+
+#### :closed_lock_with_key: Controladores y Rutas
+Controladores de API: Se definen controladores de API para manejar las operaciones de registro y login. Estos controladores utilizan Sanctum para autenticar a los usuarios y generar tokens de acceso. Los tokens generados se envían en la respuesta para que el cliente pueda utilizarlos en solicitudes subsiguientes.
+Rutas de API: Se definen rutas específicas para las operaciones de registro y login, asegurando que estas rutas estén protegidas por Sanctum y solo sean accesibles a través de solicitudes autenticadas.
+
+#### :closed_lock_with_key: Seguridad y Autorización
+Protección de Rutas: Las rutas de la API están protegidas por Sanctum, lo que garantiza que solo los usuarios autenticados puedan acceder a los recursos protegidos. Esto se logra mediante el uso de middleware que verifica la autenticidad del token de acceso proporcionado en las solicitudes.
+Gestión de Tokens: Sanctum permite revocar tokens de acceso, proporcionando una forma segura de manejar la autenticación y autorización en la API.
+
+
+
+
+
+####  🔧 Pruebas
+Para ejecutar las pruebas unitarias y de integración, utiliza el siguiente comando:
+
+php artisan test
+
+## :atom: Desarolladoras
+Arleny Medina
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/arleny-medina-prince)
+
+
+Johanna Cuevas
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/jokume/)
+
+
+## :dart: Cómo Contribuir
+Si estás interesado en contribuir a este proyecto, hay varias formas de hacerlo:
+
+Comparte este proyecto: Ayuda a difundir el conocimiento compartiendo MOGE con otros entusiastas de la tecnología.
+Contribuciones de Código: Si tienes habilidades de programación, puedes contribuir directamente al código del proyecto.
+Reporta problemas o propón mejoras: Si encuentras algún problema o tienes una idea para mejorar Explore, no dudes en abrir un nuevo problema o contribuir con un Pull Request.
+
+
+![logo moge](https://github.com/01joanna/codecrafters-app/assets/122264533/35568a99-cf77-451e-93be-58dd18672ac5)
+
+
+
+
+
+
+
+
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -7,61 +122,3 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# api-rest
