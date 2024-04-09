@@ -28,11 +28,11 @@ class UserTest extends TestCase
 
     public function testGetAllUsers()
     {
-        User::factory()->count(5)->create();
-
+        User::factory()->count(25)->create();
+    
         $users = User::all();
-
-        $this->assertCount(25, $users);
+    
+        $this->assertCount(25, $users); 
     }
 
     public function testGetSingleUser()
