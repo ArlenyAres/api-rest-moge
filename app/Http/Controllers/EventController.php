@@ -94,11 +94,10 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Reglas de validación
         $rules = [
             'title' => 'string',
             'description' => 'string',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000',
             'location' => 'string',
             'date' => 'date',
             'category_id' => 'integer|min:1|max:2',
@@ -106,40 +105,34 @@ class EventController extends Controller
             'user_id' => 'integer',
         ];
 
-        // Mensajes personalizados de validación
         $messages = [
             'category_id.exists' => 'La categoría especificada no existe.',
         ];
 
-        // Validar la solicitud
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        // Si la validación falla, devolver los errores
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation Error!', 'data' => $validator->errors()], 422);
         }
 
-        // Actualizar el evento existente
         $event = Event::findOrFail($id);
 
-        // Actualizar el campo de imagen si se proporciona una nueva imagen
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $imagePath = $image->storeAs('public/images', $imageName);
-            $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
+            $event->image = $imageName;
         }
 
-        $event->update($request->except('image')); // Actualiza todos los campos excepto la imagen
+        $event->update($request->except('image')); 
 
-        // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
         if ($event->user) {
             $user = $event->user;
             $userImageUrl = url("storage/images/users/$user->image_path");
             $user->image_url = $userImageUrl;
         }
 
-        // Construir la URL de la imagen del evento
+
         $eventImageUrl = $event->image ? url("storage/images/$event->image") : null;
         $event->image_url = $eventImageUrl;
 

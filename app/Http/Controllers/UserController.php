@@ -82,7 +82,6 @@ class UserController extends Controller
         // Construir la URL de la imagen
         $imageUrl = $user->image_path ? url("storage/images/users/$user->image_path") : null;
 
-        // Agregar la URL de la imagen al objeto de usuario
         $user->image_url = $imageUrl;
 
         return response()->json(['message' => 'User profile updated successfully', 'data' => $user], 200);
