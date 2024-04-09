@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -21,7 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'image'
+        'image_path',
     ];
 
     /**
@@ -32,7 +34,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'updated_at',
+        'created_at',
+        'deleted_at',
     ];
+
 
     /**
      * The attributes that should be cast.
@@ -43,4 +49,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function events(): hasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function subscribedEvents(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'registrations', 'user_id', 'event_id')->withTimestamps();
+    }
+
+    
 }

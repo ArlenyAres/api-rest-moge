@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 
-class LoginRegisterController extends Controller
+class AuthLoginRegisterController extends Controller
 {
     /**
      * Register a new user.
@@ -17,39 +20,64 @@ class LoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function register(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'name' => 'required|string|max:250',
-            'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
-            'password' => 'required|string|min:8|confirmed'
+        // Validar los datos
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if($validate->fails()){
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
+        try {
+            // Procesar la imagen y crear el usuario
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->extension();
+                $imagePath = $image->storeAs('images/users', $imageName, 'public');
+            }
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'password_confirmation' => Hash::make($request->password_confirmation),
+                'image_path' => $imagePath,
+            ]);
+
+            $user->save();
+
+            // Construir la URL de la imagen del usuario
+            $imageUrl = url("storage/images/users/$imageName");
+
+            // Generar token de acceso
+            $data['token'] = $user->createToken($request->email)->plainTextToken;
+            $data['user'] = $user;
+
+            // Respuesta exitosa
+            $response = [
+                'status' => 'success',
+                'message' => 'User is created successfully.',
+                'data' => $data,
+                'image_url' => $imageUrl, // Agregar la URL de la imagen al objeto de respuesta
+            ];
+
+            return response()->json($response, 201);
+        } catch (\Exception $e) {
+            // Manejar el error
+            Log::error('Error during user registration: ' . $e->getMessage());
+            return response()->json(['error' => 'Error during user registration'], 500);
         }
+    }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
 
-        $data['token'] = $user->createToken($request->email)->plainTextToken;
-        $data['user'] = $user;
 
-        $response = [
-            'status' => 'success',
-            'message' => 'User is created successfully.',
-            'data' => $data,
-        ];
 
-        return response()->json($response, 201);
-    }  
+
 
     /**
      * Authenticate the user.
@@ -64,27 +92,31 @@ class LoginRegisterController extends Controller
             'password' => 'required|string'
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Validation Error!',
                 'data' => $validate->errors(),
-            ], 403);  
+            ], 403);
         }
 
         // Check email exist
         $user = User::where('email', $request->email)->first();
 
         // Check password
-        if(!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Invalid credentials'
-                ], 401);
+            ], 401);
         }
 
-        $data['token'] = $user->createToken($request->email)->plainTextToken;
+        // $data['token'] = $user->createToken($request->email)->plainTextToken;
+        // $data['user'] = $user;
+
+        $data['token'] = $user->createToken('access_token')->plainTextToken;
         $data['user'] = $user;
+
 
         $response = [
             'status' => 'success',
@@ -104,13 +136,17 @@ class LoginRegisterController extends Controller
 
     /* Logout Revoca el token de acceso del usuario actual, 
     lo desconecta y devuelve una respuesta en json.*/
-    
+
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully'], 200);
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out successfully'], 200);
+        } else {
+            return response()->json(['message' => 'No user authenticated'], 404);
+        }
     }
+
 
     // public function user(Request $request)
     // {
