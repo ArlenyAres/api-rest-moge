@@ -7,34 +7,30 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;    
+use Illuminate\Http\UploadedFile;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
-    public function test_user_can_register()
+    public function testRegister()
     {
-        // relleno datos para que cree un usuario a partir de lo que le hemos establecido
-        $userData = [
-            'name' => 'usuario',
-            'email' => 'l@gmail.com',
-            'password' => '123456789',
-            'password_confirmation' => '123456789'
+        $data = [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'image' => UploadedFile::fake()->image('avatar.jpg'),
         ];
-    
-        $response = $this->postJson('api/register', $userData);
-    
-    // Si la respuesta no es 200, mostramos los errores para que sea mas facil verificar cual es el problema en el testeo
-        if ($response->getStatusCode() != 201) {
-            $errors = $response->json()['data'];
-            var_dump($errors);
-        }
-    
+
+        $response = $this->postJson('/api/register', $data);
         $response->assertStatus(201);
-    
-        // se ha creado en la base de datos
-        $this->assertDatabaseHas('users', [
-            'email' => $userData['email']
-        ]);
+
+        $user = User::where('name', $data['name'])
+                    ->where('email', $data['email'])
+                    ->first();
+
+        $this->assertNotNull($user, 'User not found in the database');
+        $this->assertTrue(preg_match('/^images\/users\/.*\.jpg$/', $user->image_path) === 1, 'Image path does not match the expected pattern');
     }
 
     public function test_user_can_login()
@@ -66,17 +62,14 @@ class AuthTest extends TestCase
 
     public function test_user_can_logout()
 {
-    // creo un usuario fake que ya utilice en el register
     $user = User::create([
         'name' => 'usuario',
         'email' => 'l@gmail.com',
         'password' => Hash::make('123456789')
     ]);
 
-    // usuario con token
     $token = $user->createToken('TestToken')->plainTextToken;
 
-        // solicitud post para que se lleve a la ruta a partir de la autorización
         $response = $this->postJson('api/logout', [], [
             'Authorization' => 'Bearer ' . $token
         ]);
@@ -86,7 +79,6 @@ class AuthTest extends TestCase
         var_dump($errors);
     }
 
-    // respuesta!
     $response->assertStatus(200);
     $response->assertJson(['message' => 'Logged out successfully']);
     $this->assertEmpty($user->fresh()->tokens);

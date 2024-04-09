@@ -13,7 +13,6 @@ class CategoryTest extends TestCase
 
     public function test_categories_table_has_two_entries()
     {
-        // Verificar si las categorías "online" y "presencial" existen en la base de datos
         $categoryOnline = Category::where('name', 'Online')->first();
         $categoryPresencial = Category::where('name', 'Presencial')->first();
 

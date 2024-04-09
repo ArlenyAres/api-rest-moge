@@ -133,20 +133,17 @@ class EventController extends Controller
         // Validar los campos de acuerdo a las reglas definidas
         $validator = Validator::make($request->all(), $rules);
 
-        // Si la validación falla, devolver los errores
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first()], 400);
         }
 
-        // Actualizar el evento existente
         $event = Event::findOrFail($id);
 
-        // Actualizar el campo de imagen si se proporciona una nueva imagen
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $imagePath = $image->storeAs('public/images', $imageName);
-            $event->image = $imageName; // Almacena el nombre del archivo de imagen en el campo 'image'
+            $event->image = $imageName;
         }
 
         // Usar fill() para asignar los nuevos valores
@@ -155,14 +152,13 @@ class EventController extends Controller
         // Guardar los cambios en el evento
         $event->save();
 
-        // Si el evento tiene un usuario asociado, obtener su información y construir la URL de la imagen del usuario
         if ($event->user) {
             $user = $event->user;
             $userImageUrl = url("storage/images/users/$user->image_path");
             $user->image_url = $userImageUrl;
         }
 
-        // Construir la URL de la imagen del evento
+
         $eventImageUrl = $event->image ? url("storage/images/$event->image") : null;
         $event->image_url = $eventImageUrl;
 
