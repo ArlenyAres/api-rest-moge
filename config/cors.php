@@ -14,14 +14,6 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-    'allowed_headers' => [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'X-Token-Auth',
-        'X-CSRF-TOKEN',
-        'Accept'
-    ],
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 

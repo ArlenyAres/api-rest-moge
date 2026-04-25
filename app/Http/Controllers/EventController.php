@@ -61,8 +61,10 @@ class EventController extends Controller
             'date' => 'required|date',
             'category_id' => 'required|integer|min:1',
             'max_assistants' => 'required|integer|min:1',
-            'user_id' => 'required|integer',
         ]);
+
+        // Always use the authenticated user's ID; never trust user_id from the request
+        $validatedData['user_id'] = $request->user()->id;
 
         try {
             // Manejar el archivo de imagen del evento
@@ -94,6 +96,13 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
+        $event = Event::findOrFail($id);
+
+        // Only the event owner may update the event
+        if ($event->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         // Definir las reglas de validación inicialmente vacías
         $rules = [];
 
@@ -126,18 +135,12 @@ class EventController extends Controller
             $rules['max_assistants'] = 'nullable|integer|min:1';
         }
 
-        if ($request->filled('user_id')) {
-            $rules['user_id'] = 'nullable|integer';
-        }
-
         // Validar los campos de acuerdo a las reglas definidas
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first()], 400);
         }
-
-        $event = Event::findOrFail($id);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -146,8 +149,8 @@ class EventController extends Controller
             $event->image = $imageName;
         }
 
-        // Usar fill() para asignar los nuevos valores
-        $event->fill($request->except(['image', '_method', '_token'])); // Actualiza todos los campos excepto la imagen
+        // Usar fill() para asignar los nuevos valores; excluir user_id para evitar cambios de propietario
+        $event->fill($request->except(['image', '_method', '_token', 'user_id'])); // Actualiza todos los campos excepto la imagen y user_id
 
         // Guardar los cambios en el evento
         $event->save();
@@ -194,13 +197,19 @@ class EventController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $event = Event::find($id);
 
         if (!$event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
+
+        // Only the event owner may delete the event
+        if ($event->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $event->delete();
         return response()->json(['message' => 'Event deleted OK'], 200);
     }

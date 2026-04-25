@@ -19,8 +19,10 @@ use App\Http\Controllers\RegistrationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/register', [AuthLoginRegisterController::class, 'register']);
-Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+Route::middleware(['throttle:10,1'])->group(function () {
+    Route::post('/register', [AuthLoginRegisterController::class, 'register']);
+    Route::post('/login', [AuthLoginRegisterController::class, 'login']);
+});
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/category/{id}', [EventController::class, 'indexByCategory']);
 // Route::get('{id}', [EventController::class, 'show']);
@@ -42,11 +44,10 @@ Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/{eventId}/register', [RegistrationController::class, 'register']);
     Route::delete('/events/{eventId}/unregister', [RegistrationController::class, 'unregister']);
     Route::get('/user/{id}', [UserController::class, 'getUserProfile']); //ver perfil
-    Route::post('/user/{id}/profile', [UserController::class, 'updateProfile']); //editar perfil
+    Route::post('/user/profile', [UserController::class, 'updateProfile']); //editar perfil
+    Route::delete('/user/{id}', [UserController::class, 'deleteUser']); //eliminar cuenta
+    Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 });
-
-// Rutas de eventos
-Route::get('/events/{id}/registered-users', [EventController::class, 'getRegisteredUsers']);
 Route::middleware(['cors', 'auth:sanctum'])->group(function () {
     Route::post('/events/create', [EventController::class, 'store']);
     Route::post('/events/{id}/edit', [EventController::class, 'update']);
