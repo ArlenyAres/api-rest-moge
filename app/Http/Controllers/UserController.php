@@ -105,9 +105,13 @@ class UserController extends Controller
     }
 
     // 
-    public function deleteUser($id)
+    public function deleteUser(Request $request, $id)
     {
-        // Encontrar y eliminar al usuario con el ID proporcionado
+        // Only allow a user to delete their own account
+        if ((int) $id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $user = User::findOrFail($id);
         $user->delete();
 

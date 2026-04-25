@@ -35,6 +35,7 @@ class AuthLoginRegisterController extends Controller
         try {
             // Procesar la imagen y crear el usuario
             $imagePath = null;
+            $imageName = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '.' . $image->extension();
@@ -45,14 +46,13 @@ class AuthLoginRegisterController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'password_confirmation' => Hash::make($request->password_confirmation),
                 'image_path' => $imagePath,
             ]);
 
             $user->save();
 
             // Construir la URL de la imagen del usuario
-            $imageUrl = url("storage/images/users/$imageName");
+            $imageUrl = $imageName ? url("storage/images/users/$imageName") : null;
 
             // Generar token de acceso
             $data['token'] = $user->createToken($request->email)->plainTextToken;
