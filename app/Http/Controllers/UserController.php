@@ -107,6 +107,11 @@ class UserController extends Controller
     // 
     public function deleteUser(Request $request, $id)
     {
+        // Validate that the ID is a positive integer
+        if (!ctype_digit((string) $id) || (int) $id <= 0) {
+            return response()->json(['message' => 'Invalid user ID'], 400);
+        }
+
         // Only allow a user to delete their own account
         if ((int) $id !== $request->user()->id) {
             return response()->json(['message' => 'Forbidden'], 403);
